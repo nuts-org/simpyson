@@ -40,9 +40,9 @@ docs = [
 ]
 
 [project.urls]
-repository = "https://github.com/carlosbornes/simpyson"
-documentation = "https://carlosbornes.github.io/simpyson/"
-changelog = "https://github.com/simpyson/simpyson/blob/main/CHANGELOG.md"
+repository = "https://github.com/nuts-org/simpyson"
+documentation = "https://nuts-org.github.io/simpyson/"
+changelog = "https://github.com/nuts-org/simpyson/blob/main/CHANGELOG.md"
 
 [project.scripts]
 simpyson-gui = "simpyson.gui:main"
