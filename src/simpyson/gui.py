@@ -96,6 +96,7 @@ class SimpysonGUI(QMainWindow):
 
     def create_menu(self):
         menubar = self.menuBar()
+        menubar.setNativeMenuBar(False)
 
         # File Menu
         file_menu = menubar.addMenu('File')
