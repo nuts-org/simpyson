@@ -16,7 +16,7 @@ SimPYson is a Python package designed to simplify the use of [SIMPSON](https://i
 
 ## Documentation 📖
 
-To learn more about simpyson, including some tutorials check the [documentation](https://carlosbornes.github.io/simpyson/).
+To learn more about simpyson, including some tutorials check the [documentation](https://nuts-org.github.io/simpyson/).
 
 # Planned Features 🔜
 
