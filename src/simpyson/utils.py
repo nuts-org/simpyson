@@ -36,7 +36,6 @@ def get_larmor_freq(b0, nucleus, isotope_file=None):
     if b0_unit == 't':
         b0_value = float(''.join(filter(lambda x: x.isdigit() or x == '.', b0)))
         larmor_freq = gamma * 1e7 * b0_value / (2 * np.pi * 1e6)
-        ppm = hz / np.abs(larmor_freq)
     elif b0_unit == 'mhz':
         b0_value = float(''.join(filter(lambda x: x.isdigit() or x == '.', b0))) 
         gamma_h = data['H']['1']['Gamma']
