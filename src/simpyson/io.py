@@ -178,6 +178,8 @@ class SimpReader:
             except ValueError as e:
                 print(f"Error converting to ppm: {e}")
 
+        spectrum.format = 'spe'
+
         return spectrum
 
     def to_fid(self):
