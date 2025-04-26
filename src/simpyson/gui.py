@@ -121,6 +121,7 @@ class SimpysonGUI(QMainWindow):
 
         setup_conversions = QAction('Setup Conversions', self)
         setup_conversions.triggered.connect(self.setup_conversions)
+        setup_conversions.setShortcut('Ctrl+g')
         process_menu.addAction(setup_conversions)
 
         # View Menu
@@ -128,14 +129,17 @@ class SimpysonGUI(QMainWindow):
 
         view_hz = QAction('Hz', self)
         view_hz.triggered.connect(lambda: self.change_view('hz'))
+        view_hz.setShortcut('Ctrl+1')
         view_menu.addAction(view_hz)
 
         view_ppm = QAction('ppm', self)
         view_ppm.triggered.connect(lambda: self.change_view('ppm'))
+        view_ppm.setShortcut('Ctrl+2')
         view_menu.addAction(view_ppm)
 
         view_fid = QAction('FID', self)
         view_fid.triggered.connect(lambda: self.change_view('fid'))
+        view_fid.setShortcut('Ctrl+3')
         view_menu.addAction(view_fid)
 
     def save_file(self):
