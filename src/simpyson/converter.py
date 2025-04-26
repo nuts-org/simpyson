@@ -4,6 +4,7 @@ import scipy.constants as const
 import os
 import json
 
+from simpyson.utils import get_larmor_freq
 
 def read_vasp(file, format):
     """
@@ -116,34 +117,9 @@ def hz2ppm(hz, b0, nucleus, isotope_file=None):
         ValueError: If B0 unit is invalid or nucleus not found
     """
     
-    if isotope_file is None:
-        dir = os.path.dirname(os.path.realpath(__file__))
-        isotope_file = os.path.join(dir, 'isotope_data.json')
-    
-    isotope = int(''.join(filter(str.isdigit, nucleus)))
-    element = ''.join(filter(str.isalpha, nucleus)).capitalize()
-    b0_unit = ''.join(filter(str.isalpha, b0)).lower()
-    
-    with open(isotope_file) as f:
-        data = json.load(f)
-        if element in data and str(isotope) in data[element]:
-            gamma = data[element][str(isotope)]['Gamma']
-        else:
-            raise ValueError(f'Nucleus {nucleus} not found in isotope data.')
-    
-    if b0_unit == 't':
-        b0_value = float(''.join(filter(lambda x: x.isdigit() or x == '.', b0)))
-        larm_freq = gamma * 1e7 * b0_value / (2 * np.pi * 1e6)
-        ppm = hz / np.abs(larm_freq)
-    elif b0_unit == 'mhz':
-        b0_value = float(''.join(filter(lambda x: x.isdigit() or x == '.', b0))) 
-        gamma_h = data['H']['1']['Gamma']
-        b0_value_T = 2 * np.pi * b0_value * 1e6 / (gamma_h * 1e7)
-        larm_freq = gamma * 1e7 * b0_value_T / (2 * np.pi * 1e6)
-        # ppm conversion requires absolute value of larm_freq
-        ppm = hz / np.abs(larm_freq)
-    else:
-        raise ValueError('B0 unit must be T or MHz.')
+    larmor_freq = get_larmor_freq(b0, nucleus, isotope_file)
+
+    ppm = hz / np.abs(larmor_freq)
     
     return ppm
 
@@ -164,32 +140,8 @@ def ppm2hz(ppm, b0, nucleus, isotope_file=None):
         ValueError: If B0 unit is invalid or nucleus not found
     """
     
-    if isotope_file is None:
-        dir = os.path.dirname(os.path.realpath(__file__))
-        isotope_file = os.path.join(dir, 'isotope_data.json')
+    larmor_freq = get_larmor_freq(b0, nucleus, isotope_file)
     
-    isotope = int(''.join(filter(str.isdigit, nucleus)))
-    element = ''.join(filter(str.isalpha, nucleus)).capitalize()
-    b0_unit = ''.join(filter(str.isalpha, b0)).lower()
-    
-    with open(isotope_file) as f:
-        data = json.load(f)
-        if element in data and str(isotope) in data[element]:
-            gamma = data[element][str(isotope)]['Gamma']
-        else:
-            raise ValueError(f'Nucleus {nucleus} not found in isotope data.')
-    
-    if b0_unit == 't':
-        b0_value = float(''.join(filter(lambda x: x.isdigit() or x == '.', b0)))
-        larm_freq = gamma * 1e7 * b0_value / (2 * np.pi * 1e6)
-    elif b0_unit == 'mhz':
-        b0_value = float(''.join(filter(lambda x: x.isdigit() or x == '.', b0))) 
-        gamma_h = data['H']['1']['Gamma']
-        b0_value_T = 2 * np.pi * b0_value * 1e6 / (gamma_h * 1e7)
-        larm_freq = gamma * 1e7 * b0_value_T / (2 * np.pi * 1e6)
-    else:
-        raise ValueError('B0 unit must be T or MHz.')
-    
-    hz = ppm * np.abs(larm_freq) 
+    hz = ppm * np.abs(larmor_freq) 
     
     return hz

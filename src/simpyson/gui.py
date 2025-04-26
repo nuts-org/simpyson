@@ -4,16 +4,17 @@ from PyQt5 import QtWidgets
 import sys
 from PyQt5.QtWidgets import (
     QFileDialog, QMessageBox, QVBoxLayout, QWidget, QMainWindow, QAction, QInputDialog,
-    QSplitter, QListWidget, QHBoxLayout
+    QSplitter, QListWidget, QHBoxLayout, QDialog, QFormLayout, QLineEdit, QDialogButtonBox
 )
 from PyQt5.QtCore import Qt
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 import plotly.graph_objects as go
-from simpyson.io import SimpReader
+from simpyson.io import read_simp
 import numpy as np
 import os
 import copy
 from simpyson.converter import hz2ppm, ppm2hz
+from simpyson.utils import get_larmor_freq, add_spectra
 
 
 class SimpysonGUI(QMainWindow):
@@ -101,10 +102,12 @@ class SimpysonGUI(QMainWindow):
 
         open_action = QAction('Open', self)
         open_action.triggered.connect(self.open_file)
+        open_action.setShortcut('Ctrl+o')
         file_menu.addAction(open_action)
 
         save_action = QAction('Save', self)
         save_action.triggered.connect(self.save_file)
+        save_action.setShortcut('Ctrl+s')
         file_menu.addAction(save_action)
 
         file_menu.addSeparator()
@@ -116,21 +119,29 @@ class SimpysonGUI(QMainWindow):
         # Process Menu  
         process_menu = menubar.addMenu('Process')
 
-        convert_hz_to_ppm = QAction('Convert Hz to ppm', self)
-        convert_hz_to_ppm.triggered.connect(self.convert_hz_to_ppm)
-        process_menu.addAction(convert_hz_to_ppm)
+        setup_conversions = QAction('Setup Conversions', self)
+        setup_conversions.triggered.connect(self.setup_conversions)
+        process_menu.addAction(setup_conversions)
+        
+        # Combine spectra menu
+        combine_spectra = QAction('Combine Spectra', self)
+        combine_spectra.triggered.connect(self.combine_selected_spectra)
+        process_menu.addAction(combine_spectra)
 
-        convert_ppm_to_hz = QAction('Convert ppm to Hz', self)
-        convert_ppm_to_hz.triggered.connect(self.convert_ppm_to_hz)
-        process_menu.addAction(convert_ppm_to_hz)
+        # View Menu
+        view_menu = menubar.addMenu('View')
 
-        convert_fid_to_spe = QAction('Convert FID to SPE', self)
-        convert_fid_to_spe.triggered.connect(self.convert_fid_to_spe)
-        process_menu.addAction(convert_fid_to_spe)
+        view_hz = QAction('Hz', self)
+        view_hz.triggered.connect(lambda: self.change_view('hz'))
+        view_menu.addAction(view_hz)
 
-        convert_spe_to_fid = QAction('Convert SPE to FID', self)
-        convert_spe_to_fid.triggered.connect(self.convert_spe_to_fid)
-        process_menu.addAction(convert_spe_to_fid)
+        view_ppm = QAction('ppm', self)
+        view_ppm.triggered.connect(lambda: self.change_view('ppm'))
+        view_menu.addAction(view_ppm)
+
+        view_fid = QAction('FID', self)
+        view_fid.triggered.connect(lambda: self.change_view('fid'))
+        view_menu.addAction(view_fid)
 
     def save_file(self):
         if not self.current_file:
@@ -150,9 +161,7 @@ class SimpysonGUI(QMainWindow):
             options=options
         )
 
-        if not save_filename:
-            # User canceled
-            return
+        if not save_filename: return
 
         try:
             format = save_filename.lower().split('.')[-1] 
@@ -161,7 +170,7 @@ class SimpysonGUI(QMainWindow):
                 QMessageBox.warning(self, 'Save File', 'Unsupported file format!')
                 return
 
-            self.data.save(save_filename, format=format)
+            self.data.write(save_filename, format=format)
 
             QMessageBox.information(self, 'Save File', 'File saved successfully!')
         except Exception as e:
@@ -170,18 +179,27 @@ class SimpysonGUI(QMainWindow):
     def open_file(self):
         options = QFileDialog.Options()
         filenames, _ = QFileDialog.getOpenFileNames(
-            self, 'Open File', '', 'SIMPSON Files (*.spe *.fid)', options=options
+            self, 'Open File', '', 'SIMPSON Files (*.spe *.fid *.xreim)', options=options
         )
 
         for filename in filenames:
             if filename:
                 file_format = filename.split('.')[-1]
                 base_name = os.path.basename(filename)
+                
+                data = read_simp(filename, format=file_format)
+                
+                if file_format == 'spe':
+                    view = 'hz'
+                elif file_format == 'fid':
+                    view = 'fid'
+                elif file_format == 'xreim':
+                    view = 'fid'
 
-                # Store both the data and full path
                 self.files_data[base_name] = {
-                    'data': SimpReader(filename, format=file_format),
-                    'path': filename
+                    'data': data,
+                    'path': filename,
+                    'view': view,
                 }
 
                 # Add to list widget if not already there
@@ -211,30 +229,53 @@ class SimpysonGUI(QMainWindow):
             fig = go.Figure()
 
             # Determine x-axis type from first selected item
-            first_data = self.files_data[selected_items[0].text()]['data']
-            if 'ppm' in first_data.data:
-                x_axis = 'ppm'
-                xlabel = 'Chemical Shift (ppm)'
-            elif 'hz' in first_data.data:
-                x_axis = 'hz'
-                xlabel = 'Frequency (Hz)'
-            elif 'time' in first_data.data:
-                x_axis = 'time'
-                xlabel = 'Time (ms)'
-            else:
+            first_file = self.files_data[selected_items[0].text()]
+            first_data = first_file['data']
+
+            if 'view' not in first_file:
                 QMessageBox.warning(self, 'Plot Data', 'Data does not contain valid axis information.')
                 return
+
+            # Get data based on view
+            match first_file['view']:
+                case 'ppm':
+                    if not first_data.ppm:
+                        QMessageBox.warning(self, 'Plot Data', 'No ppm data available. Set B0 and nucleus first.')
+                        return
+                    x_axis = 'ppm'
+                    data_source = 'ppm'
+                    xlabel = 'Chemical Shift (ppm)'
+                case 'hz':
+                    if not first_data.spe:
+                        QMessageBox.warning(self, 'Plot Data', 'No spectrum data available.')
+                        return
+                    x_axis = 'hz'
+                    data_source = 'spe'
+                    xlabel = 'Frequency (Hz)'
+                case 'fid':
+                    if not first_data.fid:
+                        QMessageBox.warning(self, 'Plot Data', 'No FID data available.')
+                        return
+                    x_axis = 'time'
+                    data_source = 'fid'
+                    xlabel = 'Time (ms)'
 
             # Plot each selected spectrum
             for item in selected_items:
                 data = self.files_data[item.text()]['data']
-                if x_axis in data.data:
+                
+                # Access data via property (fid/spe/ppm)
+                data_dict = getattr(data, data_source)
+                if data_dict and x_axis in data_dict:
                     fig.add_trace(go.Scatter(
-                        x=data.data[x_axis],
-                        y=data.data['real'],
+                        x=data_dict[x_axis],
+                        y=data_dict['real'],
                         name=item.text(),
                         mode='lines'
                     ))
+                else:
+                    QMessageBox.warning(self, 'Plot Data', f'Missing data for {item.text()}.')
+                    continue
 
             # Update layout with consistent axis settings
             fig.update_layout(
@@ -245,7 +286,7 @@ class SimpysonGUI(QMainWindow):
             )
 
             # Always invert x-axis for ppm and hz
-            if x_axis in ['ppm', 'hz']:
+            if first_file['view'] in ['ppm', 'hz']:
                 fig.update_xaxes(autorange="reversed")
 
             # Update plot display
@@ -255,146 +296,121 @@ class SimpysonGUI(QMainWindow):
             self.browser.setHtml('<html><body><h3 style="text-align:center;margin-top:40px;color:#888;">No data to display</h3></body></html>')
             QMessageBox.warning(self, 'Plot Data', 'No data to plot!')
 
-    def convert_hz_to_ppm(self):
-        selected_items = self.file_list.selectedItems()
-
-        if not selected_items:
-            QMessageBox.warning(self, 'Convert Hz to ppm', 'No file selected!')
-            return
-
-        b0, ok_b0 = QInputDialog.getText(self, 'Input', 'Enter B0 (e.g., 400MHz or 9.4T):')
-        if not (ok_b0 and b0):
-            return
-
-        nucleus, ok_nucleus = QInputDialog.getText(self, 'Input', 'Enter nucleus (e.g., 1H or 13C):')
-        if not (ok_nucleus and nucleus):
-            return
-
-        for item in selected_items:
-            file_name = item.text()
-            file_data = self.files_data[file_name]['data']
-
-            if file_data and 'hz' in file_data.data:
-                try:
-                    new_data = copy.deepcopy(file_data)
-                    new_data.b0 = b0
-                    new_data.nucleus = nucleus
-
-                    hz = new_data.data['hz']
-                    new_data.data['ppm'] = hz2ppm(hz, b0, nucleus)
-    
-                    self.files_data[file_name]['data'] = new_data
-                    if file_name == self.current_file:
-                        self.data = new_data
-                
-                except ValueError as e:
-                    QMessageBox.warning(self, 'Convert Hz to ppm', 
-                                        f"Error converting {file_name}: {str(e)}")
-
-        self.plot_data(selected_items)
-
-    def convert_ppm_to_hz(self):
-        selected_items = self.file_list.selectedItems()
-
-        if not selected_items:
-            QMessageBox.warning(self, 'Convert ppm to Hz', 'No file selected!')
-            return
-
-        b0, ok_b0 = QInputDialog.getText(self, 'Input', 'Enter B0 (e.g., 400MHz or 9.4T):')
-        if not (ok_b0 and b0):
-            return
-
-        nucleus, ok_nucleus = QInputDialog.getText(self, 'Input', 'Enter nucleus (e.g., 1H or 13C):')
-        if not (ok_nucleus and nucleus):
-            return
-
-        for item in selected_items:
-            file_name = item.text()
-            file_data = self.files_data[file_name]['data']
-
-            if file_data and 'ppm' in file_data.data:
-                try:
-                    new_data = copy.deepcopy(file_data)
-                    new_data.b0 = b0
-                    new_data.nucleus = nucleus
-
-                    ppm = new_data.data['ppm']
-                    new_data.data['hz'] = ppm2hz(ppm, b0, nucleus)
-
-                    # This is just an initial implementation
-                    # Maybe one should implement a way to select on the GUI
-                    # which range to show on the plot
-                    if 'ppm' in new_data.data:
-                        del new_data.data['ppm']
-
-                    self.files_data[file_name]['data'] = new_data
-                    if file_name == self.current_file:
-                        self.data = new_data
-                
-                except ValueError as e:
-                    QMessageBox.warning(self, 'Convert ppm to Hz', 
-                                        f"Error converting {file_name}: {str(e)}")
-
-        self.plot_data(selected_items)
-
-    def convert_fid_to_spe(self):
-        selected_items = self.file_list.selectedItems()
+    def change_view(self, view):
+        if not (selected_items := self.get_selection()): return
         
-        if not selected_items:
-            QMessageBox.warning(self, 'Convert FID to SPE', 'No files selected!')
+        if view == 'ppm' and not all(self.has_setup(item.text()) for item in selected_items):
+            QMessageBox.warning(self, 'Not Setup', 'B0 and nucleus must be set for PPM view')
             return
         
-        hz2ppm_prompt = QMessageBox.question(self, 
-                                             'Convert FID to SPE', 
-                                             'Would you like to get spectra in ppm?',
-                                             QMessageBox.Yes | QMessageBox.No)
-        if hz2ppm_prompt == QMessageBox.Yes:
-            b0, ok_b0 = QInputDialog.getText(self, 'Input', 'Enter B0 (e.g., 400MHz or 9.4T):')
-            if not (ok_b0 and b0):
-                return
-
-            nucleus, ok_nucleus = QInputDialog.getText(self, 'Input', 'Enter nucleus (e.g., 1H or 13C):')
-            if not (ok_nucleus and nucleus):
-                return
-        else:
-            b0 = None
-            nucleus = None
-
         for item in selected_items:
             file_name = item.text()
-            file_data = self.files_data[file_name]['data']
+            self.files_data[file_name]['view'] = view
 
-            if file_data and file_data.format == 'fid':
-                try:
-                    file_data.b0 = b0
-                    file_data.nucleus = nucleus
-
-                    new_data = file_data.to_spe()
-                    self.files_data[file_name]['data'] = new_data
-
-                    if file_name == self.current_file:
-                        self.data = new_data
-                except ValueError as e:
-                    QMessageBox.warning(self, 'Convert FID to SPE', f"Error converting {file_name}: {str(e)}")
-            else:
-                QMessageBox.warning(self, 'Convert FID to SPE', f"{file_name} is not a FID format file!")            
         self.plot_data(selected_items)
 
-    def convert_spe_to_fid(self):
-        if not self.current_file:
-            QMessageBox.warning(self, 'Convert SPE to FID', 'No file selected!')
-            return
+    def setup_conversions(self):
+        if not (selected_items := self.get_selection()): return
+        
+        dialog = QDialog(self)
+        dialog.setWindowTitle('Setup Conversions')
+        form = QFormLayout(dialog)
 
-        if self.data and self.data.format == 'spe':
+        b0_edit = QLineEdit(dialog)
+        form.addRow('B0 (e.g, 400MHz or 9.4T:', b0_edit)
+
+        nucleus_edit = QLineEdit(dialog)
+        form.addRow('Nucleus (e.g, 1H or 13C:', nucleus_edit)
+
+        buttons = QDialogButtonBox(
+            QDialogButtonBox.Ok | QDialogButtonBox.Cancel,
+            parent=dialog
+        )
+        buttons.accepted.connect(dialog.accept)
+        buttons.rejected.connect(dialog.reject)
+        form.addRow(buttons)
+
+        if dialog.exec_() == QDialog.Accepted:
+            b0 = b0_edit.text()
+            nucleus = nucleus_edit.text()
+
+            if not (b0 and nucleus):
+                return
+            
             try:
-                new_data = self.data.to_fid()
-                self.files_data[self.current_file]['data'] = new_data
-                self.data = new_data
-                self.plot_data()
+                _ = get_larmor_freq(b0, nucleus)
             except ValueError as e:
-                QMessageBox.warning(self, 'Convert SPE to FID', str(e))
-        else:
-            QMessageBox.warning(self, 'Convert SPE to FID', 'No SPE data to convert!')
+                QMessageBox.warning(self, 'Setup Conversions', f'Invalid Input: {str(e)}')
+                return
+
+            for item in selected_items:
+                file_name = item.text()
+                file_data = self.files_data[file_name]['data']
+
+                file_data.b0 = b0
+                file_data.nucleus = nucleus
+    
+    # Combine spectra
+    def combine_selected_spectra(self):
+        """Combine multiple selected spectra into a single spectrum."""
+        if not (selected_items := self.get_selection()): 
+            return
+            
+        if len(selected_items) < 2:
+            QMessageBox.warning(self, 'Combine Spectra', 'Please select at least two spectra to combine')
+            return
+        
+        # Check that all selected items have spectrum data
+        for item in selected_items:
+            file_data = self.files_data[item.text()]['data']
+            if not file_data.spe:
+                QMessageBox.warning(self, 'Combine Spectra', 
+                               f'{item.text()} is not in spectrum format. Convert all files to spectra first.')
+                return
+        
+        # Collect all Simpy objects
+        spectra_list = [self.files_data[item.text()]['data'] for item in selected_items]
+        
+        try:
+            # Combine spectra
+            combined = add_spectra(spectra_list)
+            
+            # Create a new name for the combined spectrum
+            base_names = [item.text().split('.')[0] for item in selected_items]
+            new_name = f"Combined_{'_'.join(base_names[:2])}"
+            if len(base_names) > 2:
+                new_name += f"_plus{len(base_names)-2}"
+            new_name += '.spe'
+            
+            # Add to file list
+            self.files_data[new_name] = {
+                'data': combined,
+                'path': None,
+                'view': 'hz'
+            }
+            
+            self.file_list.addItem(new_name)
+            new_item = self.file_list.findItems(new_name, Qt.MatchExactly)[0]
+            self.file_list.setCurrentItem(new_item)
+            
+            QMessageBox.information(self, 'Combine Spectra', 
+                               f'Successfully combined {len(spectra_list)} spectra')
+                               
+        except Exception as e:
+            QMessageBox.critical(self, 'Error', f'Failed to combine spectra: {str(e)}')
+
+    def get_selection(self):
+        selected_items = self.file_list.selectedItems()
+
+        if not selected_items:
+            QMessageBox.warning(self, 'No Selection', 'Please select at least one item')
+            return None
+        
+        return selected_items
+
+    def has_setup(self, file_name):
+        data = self.files_data[file_name]['data']
+        return not (data.b0 is None or data.nucleus is None)
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
