@@ -29,6 +29,8 @@ def read_simp(
         format = 'fid'
     elif ext == '.xreim':
         format = 'xreim'
+    elif ext == '.csdf':
+        format = 'csdf'
     else:
         raise ValueError(f"Cannot determine file format of {filename}")
     
@@ -40,6 +42,8 @@ def read_simp(
         read_fid(filename, simpy_data)
     elif format == 'xreim':
         read_xreim(filename, simpy_data)
+    elif format == 'csdf':
+        read_csdf(filename, simpy_data)
     else:
         raise ValueError(f"Unsupported format {format}")
     return simpy_data
@@ -116,6 +120,20 @@ def read_xreim(filename, simpy_data):
             imag.append(float(line.split()[2]))
 
         simpy_data.from_xreim(np.array(time), np.array(real), np.array(imag))
+
+def read_csdf(filename, simpy_data):
+    """
+    This method reads NMR data from a SIMPSON CSDF file.
+    """
+    import csdmpy as cp
+    data = cp.load(filename)
+    hz = data.dimensions[0].coordinates.value
+    real = data.dependent_variables[0].components[0].real
+    imag = data.dependent_variables[0].components[0].imag
+    np_value = np.array(len(hz))
+    sw = np.abs(hz[-1] - hz[0])
+
+    simpy_data.from_csdf(real, imag, hz, np_value, sw)
 
 # Function to write Simpson simulations
 def write_simp(spinsys, 

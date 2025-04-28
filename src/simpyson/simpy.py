@@ -26,7 +26,7 @@ class Simpy:
         self._fid_data = None  # Time-domain data
         self._spe_data = None  # Frequency-domain data
         self._xreim_data = None # xreim data
-        self._metadata = {}    # Additional information
+        self._metadata = {}    
     
     @property
     def b0(self):
@@ -184,6 +184,23 @@ class Simpy:
         # Clear cached FID and spectrum data
         self._fid_data = None
         self._spe_data = None
+        return self
+    
+    def from_csdf(self, real, imag, hz, np_value, sw):
+        """Set data from CSDF values."""
+
+        self._spe_data = {
+            'real': np.array(real),
+            'imag': np.array(imag),
+            'np': np_value,
+            'sw': sw,
+            'hz': np.array(hz)
+        }
+
+        if self._b0 and self._nucleus:
+            self._compute_ppm()
+
+        self._fid_data = None
         return self
     
     def copy(self):
