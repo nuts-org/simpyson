@@ -1,7 +1,9 @@
 name: docs
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - v0.2-dev
   pull_request:
 
 concurrency:
@@ -18,6 +20,8 @@ jobs:
     steps:
       - name: Check out repo
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -32,15 +36,33 @@ jobs:
           pip install mknotebooks
           uv pip install --system "simpyson[docs] @ ."
 
-      - name: Build docs
-        run: |
-          if [ "${{ github.event_name }}" == "pull_request" ]; then
-            mkdocs build --strict
-          else
-            mkdocs build
-          fi
-        id: build_docs
+      #- name: Build docs
+      #  run: |
+      #    if [ "${{ github.event_name }}" == "pull_request" ]; then
+      #      mkdocs build --strict
+      #    else
+      #      mkdocs build
+      #    fi
+      #  id: build_docs
 
-      - name: Rebuild and deploy docs
-        run: mkdocs gh-deploy --force
-        if: github.ref == 'refs/heads/main' && steps.build_docs.outcome == 'success'
+      #- name: Rebuild and deploy docs
+      #  run: mkdocs gh-deploy --force
+      #  if: github.ref == 'refs/heads/main' && steps.build_docs.outcome == 'success'
+
+      - name: Configure Git User
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Deploy documentation using mike
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "Skipping deploy for pull request."
+            mkdocs build --strict # Optionally build PRs for validation
+          elif [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            mike deploy --push --update-aliases latest main
+          elif [[ "${{ github.ref }}" == "refs/heads/v0.2-dev" ]]; then
+            mike deploy --push --update-aliases v0.2 v0.2-dev
+          else
+            echo "Not deploying docs for this branch/tag: ${{ github.ref }}"
+          fi
