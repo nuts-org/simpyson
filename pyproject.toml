@@ -7,7 +7,7 @@ name = "simpyson"
 description="A python interface to Simpson"
 version = "0.2.0"
 readme = "README.md"
-license = { text = "BSD-3" }
+license = { text = "MIT" }
 authors = [
     { name = "Carlos Bornes"},
     { name = "Daniel Pereira"},
