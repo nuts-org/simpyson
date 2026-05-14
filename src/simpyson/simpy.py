@@ -44,6 +44,28 @@ class Simpy:
         self._xreim_data: dict | None = None
         self._metadata: dict = {}
 
+    def __repr__(self) -> str:
+        meta = []
+        if self._b0:
+            meta.append(f"b0={self._b0!r}")
+        if self._nucleus:
+            meta.append(f"nucleus={self._nucleus!r}")
+
+        data = []
+        if self._fid_data is not None:
+            n, sw = int(self._fid_data['np']), self._fid_data['sw']
+            data.append(f"fid(np={n}, sw={sw:.0f} Hz)")
+        if self._spe_data is not None:
+            n, sw = int(self._spe_data['np']), self._spe_data['sw']
+            ppm_flag = " +ppm" if 'ppm' in self._spe_data else ""
+            data.append(f"spe(np={n}, sw={sw:.0f} Hz{ppm_flag})")
+        if self._xreim_data is not None:
+            data.append(f"xreim(n={len(self._xreim_data['time'])})")
+
+        payload = ", ".join(data) if data else "empty"
+        prefix = (", ".join(meta) + ", ") if meta else ""
+        return f"Simpy({prefix}{payload})"
+
     @property
     def b0(self) -> str | None:
         """Magnetic field strength."""
@@ -213,7 +235,7 @@ class Simpy:
         """
         if time is None:
             dt = 1.0 / sw
-            time = np.linspace(0, np_value*dt, int(np_value)) * 1e3  # seconds to milliseconds
+            time = np.arange(int(np_value)) * dt * 1e3  # seconds to milliseconds
 
         self._fid_data = {
             'real': np.array(real),

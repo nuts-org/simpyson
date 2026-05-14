@@ -141,16 +141,16 @@ class CPMAS(PulseSequenceTemplate):
     """
     Cross-polarization magic angle spinning sequence.
 
+    The initial 1H magnetization is set via ``start_operator`` (e.g. ``I1x``)
+    in the SIMPSON par block, so no explicit 90° pulse is needed here.
+
     Parameters:
-        p1H (float): 1H 90° pulse length in μs. Default: 5.0
-        pl1H (float): 1H 90° pulse power in Hz. Default: 50000
-        ph1H (str): 1H 90° pulse phase. Default: 'y'
         pcp (float): Contact pulse length in μs. Default: 1000
         plHcp (float): 1H contact pulse power in Hz. Default: 70000
         phHcp (str): 1H contact pulse phase. Default: '0'
         plCcp (float): 13C contact pulse power in Hz. Default: 69000
         phCcp (str): 13C contact pulse phase. Default: '0'
-        dw (str): Dwell time expression. Default: '1.0e6/spin_rate/gamma_angles'
+        dw (str): Dwell time expression. Default: '1e6/spin_rate/gamma_angles'
     """
 
     def __init__(self, **kwargs):
@@ -160,9 +160,6 @@ class CPMAS(PulseSequenceTemplate):
 
     def get_default_parameters(self) -> dict[str, Any]:
         return {
-            'variable_p1H': 5.0,
-            'variable_pl1H': 50000,
-            'variable_ph1H': 'y',
             'variable_pcp': 1000,
             'variable_plHcp': 70000,
             'variable_phHcp': '0',
@@ -173,7 +170,6 @@ class CPMAS(PulseSequenceTemplate):
 
     def get_required_parameters(self) -> set[str]:
         return {
-            'variable_p1H', 'variable_pl1H', 'variable_ph1H',
             'variable_pcp', 'variable_plHcp', 'variable_phHcp',
             'variable_plCcp', 'variable_phCcp', 'variable_dw'
         }

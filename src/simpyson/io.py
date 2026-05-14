@@ -1,89 +1,14 @@
 from __future__ import annotations
 
 import logging
+from collections.abc import Callable
 from pathlib import Path
 
-import csdmpy as csdm
 import numpy as np
 
 from simpyson.simpy import Simpy
 
 logger = logging.getLogger("simpyson")
-
-
-def read_simp(
-    filename: str,
-    format: str | None = None,
-    b0: str | None = None,
-    nucleus: str | None = None,
-) -> Simpy:
-    """
-    Read SIMPSON NMR data from a file into a unified Simpy object.
-
-    The file format is determined from the extension if ``format`` is not
-    given explicitly.
-
-    Parameters
-    ----------
-    filename : str
-        Path to the SIMPSON output file.
-    format : str or None
-        File format (``'spe'``, ``'fid'``, ``'xreim'``, ``'csdf'``).
-        If None, guessed from the file extension.
-    b0 : str or None
-        Magnetic field strength (e.g., ``'9.4T'``, ``'400MHz'``).
-        Needed for ppm conversion.
-    nucleus : str or None
-        Nucleus type (e.g., ``'1H'``, ``'13C'``).
-        Needed for ppm conversion.
-
-    Returns
-    -------
-    Simpy
-        Object containing the loaded data.
-
-    Raises
-    ------
-    ValueError
-        If the file format cannot be determined or is unsupported.
-    OSError
-        If the file cannot be read or parsed.
-    """
-    supported_formats = {'spe', 'fid', 'xreim', 'csdf'}
-
-    if format is not None:
-        format = format.lower()
-        if format not in supported_formats:
-            raise ValueError(f"Unsupported format {format}")
-    else:
-        ext = Path(filename).suffix.lower()
-        if ext == '.spe':
-            format = 'spe'
-        elif ext == '.fid':
-            format = 'fid'
-        elif ext == '.xreim':
-            format = 'xreim'
-        elif ext == '.csdf':
-            format = 'csdf'
-        else:
-            raise ValueError(f"Cannot determine file format of {filename}")
-
-    simpy_data = Simpy(b0=b0, nucleus=nucleus)
-
-    try:
-        if format == 'spe':
-            read_spe(filename, simpy_data)
-        elif format == 'fid':
-            read_fid(filename, simpy_data)
-        elif format == 'xreim':
-            read_xreim(filename, simpy_data)
-        elif format == 'csdf':
-            read_csdf(filename, simpy_data)
-        else:
-            raise ValueError(f"Unsupported format {format}")
-    except (ValueError, KeyError, IndexError, OSError) as e:
-        raise OSError(f"Error reading file {filename} as format {format}: {e!s}") from e
-    return simpy_data
 
 
 def read_spe(filename: str, simpy_data: Simpy) -> None:
@@ -215,7 +140,11 @@ def read_xreim(filename: str, simpy_data: Simpy) -> None:
 
 def read_csdf(filename: str, simpy_data: Simpy) -> None:
     """
-    Read NMR data from a SIMPSON CSDF file.
+    Read NMR data from a CSDF file (CSDM format).
+
+    Requires the optional ``csdmpy`` dependency. The frequency axis is
+    always converted to Hz; files storing coordinates in other units (e.g.
+    kHz) are handled automatically via unit conversion.
 
     Parameters
     ----------
@@ -224,11 +153,92 @@ def read_csdf(filename: str, simpy_data: Simpy) -> None:
     simpy_data : Simpy
         Object to populate with spectrum data.
     """
+    import csdmpy as csdm  # noqa: PLC0415
+
     data = csdm.load(filename)
-    hz = data.dimensions[0].coordinates.value
+    hz = data.dimensions[0].coordinates.to('Hz').value
     real = data.dependent_variables[0].components[0].real
     imag = data.dependent_variables[0].components[0].imag
-    np_value = np.array(len(hz))
-    sw = np.abs(hz[-1] - hz[0])
+    np_value = len(hz)
+    sw = float(np.abs(hz[-1] - hz[0]))
 
     simpy_data.from_csdf(real, imag, hz, np_value, sw)
+
+
+# Defined once, after the reader functions below
+_EXT_TO_FMT: dict[str, str] = {
+    '.spe':   'spe',
+    '.fid':   'fid',
+    '.xreim': 'xreim',
+    '.csdf':  'csdf',
+}
+
+_READERS: dict[str, Callable[[str, Simpy], None]] = {
+    'spe':   read_spe,
+    'fid':   read_fid,
+    'xreim': read_xreim,
+    'csdf':  read_csdf,
+}
+
+
+def read_simp(
+    filename: str,
+    fmt: str | None = None,
+    b0: str | None = None,
+    nucleus: str | None = None,
+) -> Simpy:
+    """
+    Read SIMPSON NMR data from a file into a unified Simpy object.
+
+    The file format is determined from the extension if ``fmt`` is not
+    given explicitly.
+
+    Parameters
+    ----------
+    filename : str
+        Path to the SIMPSON output file.
+    fmt : str or None
+        File format (``'spe'``, ``'fid'``, ``'xreim'``, ``'csdf'``).
+        If None, guessed from the file extension.
+    b0 : str or None
+        Magnetic field strength (e.g., ``'9.4T'``, ``'400MHz'``).
+        Needed for ppm conversion.
+    nucleus : str or None
+        Nucleus type (e.g., ``'1H'``, ``'13C'``).
+        Needed for ppm conversion.
+
+    Returns
+    -------
+    Simpy
+        Object containing the loaded data.
+
+    Raises
+    ------
+    ValueError
+        If the file format cannot be determined or is unsupported.
+    OSError
+        If the file cannot be read or parsed.
+    """
+    if fmt is not None:
+        fmt = fmt.lower()
+    else:
+        ext = Path(filename).suffix.lower()
+        fmt = _EXT_TO_FMT.get(ext)
+        if fmt is None:
+            raise ValueError(
+                f"Cannot determine file format of {filename!r}. "
+                f"Supported extensions: {sorted(_EXT_TO_FMT)}"
+            )
+
+    reader = _READERS.get(fmt)
+    if reader is None:
+        raise ValueError(
+            f"Unsupported format {fmt!r}. Supported: {sorted(_READERS)}"
+        )
+
+    simpy_data = Simpy(b0=b0, nucleus=nucleus)
+    try:
+        reader(filename, simpy_data)
+    except (ValueError, KeyError, IndexError, OSError) as e:
+        raise OSError(f"Error reading {filename!r} as {fmt!r}: {e}") from e
+    return simpy_data

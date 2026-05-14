@@ -103,8 +103,7 @@ class TestReadFid:
         data = Simpy()
         read_fid(path, data)
         fid = data.fid
-        # Expected max time: npoints / sw seconds -> * 1e3 for ms
-        expected_max_ms = fid['np'] / fid['sw'] * 1e3
+        expected_max_ms = (fid['np'] - 1) / fid['sw'] * 1e3
         assert fid['time'][-1] == pytest.approx(expected_max_ms, rel=0.01)
 
 

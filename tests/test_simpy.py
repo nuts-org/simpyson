@@ -78,8 +78,7 @@ def test_from_fid_time_axis_is_ms(simple_fid):
     npoints = fid['np']
     sw = fid['sw']
     dt = 1.0 / sw
-    expected_max_ms = npoints * dt * 1e3
-    # last point should be close to max time
+    expected_max_ms = (npoints - 1) * dt * 1e3
     assert fid['time'][-1] == pytest.approx(expected_max_ms, rel=0.01)
 
 
@@ -94,7 +93,7 @@ def test_from_fid_default_time_matches_explicit():
     s1.from_fid(real, imag, npoints, sw)  # time computed internally
 
     dt = 1.0 / sw
-    time_manual = np.linspace(0, npoints * dt, npoints) * 1e3
+    time_manual = np.arange(npoints) * dt * 1e3
     s2 = Simpy()
     s2.from_fid(real, imag, npoints, sw, time=time_manual)
 

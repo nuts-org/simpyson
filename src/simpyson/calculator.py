@@ -141,11 +141,35 @@ class SimpCalc:
     >>> calc.save("simulation.in")
     """
 
-    def __init__(self, spinsys: str | object, pulse_sequence: str | PulseSequenceTemplate | None = None, **kwargs) -> None:
+    @staticmethod
+    def _normalize_spinsys(spinsys: str | object) -> str:
+        """Return a canonical ``spinsys { … }`` block string."""
         if spinsys is None:
             raise ValueError("spinsys cannot be None")
+        if hasattr(spinsys, 'to_simpson'):
+            spinsys = spinsys.to_simpson()
+        if not isinstance(spinsys, str):
+            raise ValueError(
+                f"spinsys must be a string or a Soprano SpinSystem object, got {type(spinsys)}"
+            )
+        stripped = spinsys.strip()
+        if stripped.startswith("spinsys"):
+            return stripped + "\n"
+        return f"spinsys {{\n{stripped}\n}}\n"
 
-        self.spinsys = spinsys
+    @property
+    def spinsys(self) -> str:
+        """The normalized ``spinsys { … }`` block string."""
+        return self._spinsys
+
+    @spinsys.setter
+    def spinsys(self, value: str | object) -> None:
+        self._spinsys = self._normalize_spinsys(value)
+        if hasattr(self, 'pulse_sequence') and isinstance(self.pulse_sequence, CPMAS):
+            self.pulse_sequence.turnoff_interactions = _extract_turnoff_interactions(self._spinsys)
+
+    def __init__(self, spinsys: str | object, pulse_sequence: str | PulseSequenceTemplate | None = None, **kwargs) -> None:
+        self.spinsys = spinsys  # calls setter, raises on bad input
         self.parameters = kwargs
         self.output_config = {}
 
@@ -195,10 +219,7 @@ class SimpCalc:
                     pulseq_params['offset'] = self.parameters['variable_offset']
 
                 # Count channels so the template emits the right number of offset args
-                spinsys_str = self.spinsys
-                if hasattr(spinsys_str, 'to_simpson'):
-                    spinsys_str = spinsys_str.to_simpson()
-                channels_match = re.search(r'channels\s+([^\n]+)', str(spinsys_str))
+                channels_match = re.search(r'channels\s+([^\n]+)', self.spinsys)
                 if channels_match:
                     pulseq_params['num_channels'] = len(channels_match.group(1).split())
 
@@ -218,47 +239,19 @@ class SimpCalc:
                 "a PulseSequenceTemplate object"
             )
 
-    def generate_spinsys(self):
+    def generate_spinsys(self) -> str:
         """
-        Generate the spinsys section of the SIMPSON input file.
+        Return the spinsys section of the SIMPSON input file.
 
-        The spinsys can be provided as a Soprano SpinSystem object (with a
-        `to_simpson()` method), a complete ``spinsys { ... }`` block string, or
-        just the body (starting with ``channels`` or ``nuclei``).
-
-        This method is idempotent: calling it multiple times produces the same
-        output without re-wrapping.
+        The spinsys is normalised once at construction (or when the
+        ``spinsys`` property is set) and returned verbatim here.
 
         Returns
         -------
         str
-            The spinsys section as a string.
+            The ``spinsys { … }`` block as a string.
         """
-        spinsys = self.spinsys
-
-        # Convert Soprano object to string once
-        if hasattr(spinsys, 'to_simpson'):
-            spinsys = spinsys.to_simpson()
-
-        if isinstance(spinsys, str):
-            stripped = spinsys.strip()
-            if stripped.startswith("spinsys"):
-                # Already a complete block — use as-is
-                pass
-            elif stripped.startswith(("channels", "nuclei")):
-                # Body only — wrap it
-                spinsys = f"spinsys {{\n{spinsys}\n}}\n"
-            else:
-                # Assume it's body content (allows flexibility)
-                spinsys = f"spinsys {{\n{spinsys}\n}}\n"
-        else:
-            raise ValueError(
-                f"spinsys must be a string or a Soprano SpinSystem object. Got {type(spinsys)}"
-            )
-
-        # Cache the processed string so repeated calls are idempotent
-        self.spinsys = spinsys
-        return spinsys
+        return self.spinsys
 
     def generate_par(self) -> str:
         """
@@ -340,12 +333,7 @@ class SimpCalc:
         # Lazily populate CPMAS turnoff list from the spinsys so this works
         # even when a CPMAS instance is passed directly to SimpCalc.
         if isinstance(self.pulse_sequence, CPMAS) and not self.pulse_sequence.turnoff_interactions:
-            spinsys_str = self.spinsys
-            if hasattr(spinsys_str, 'to_simpson'):
-                spinsys_str = spinsys_str.to_simpson()
-            self.pulse_sequence.turnoff_interactions = _extract_turnoff_interactions(
-                str(spinsys_str)
-            )
+            self.pulse_sequence.turnoff_interactions = _extract_turnoff_interactions(self.spinsys)
 
         return self.pulse_sequence.generate_code()
 
@@ -736,7 +724,8 @@ def simulate_spectrum(
 
         elif quadrupoles:
             max_cq = max(quadrupoles)
-            required_sw = max_cq ** 2 / nu_l_hz if is_ct else 2.5 * max_cq
+            raw_sw = max_cq ** 2 / nu_l_hz if is_ct else 2.5 * max_cq
+            required_sw = max(raw_sw, nu_l_hz * 10e-6)
 
         else:
             raise ValueError(
