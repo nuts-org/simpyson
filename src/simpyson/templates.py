@@ -64,7 +64,7 @@ class NoPulse(PulseSequenceTemplate):
     No pulse sequence - direct acquisition.
 
     Parameters:
-        tsw (float): Sweep time in microseconds. Default: 1e4
+        tsw (float): Dwell time in microseconds. Default: '1e6/sw'
     """
 
     def get_default_parameters(self) -> dict[str, Any]:
@@ -108,7 +108,7 @@ class Pulse90(PulseSequenceTemplate):
         pH (float): Pulse length in microseconds. Default: 5.0
         plH (float): Pulse power in Hz. Default: 50000
         phH (str): Pulse phase. Default: '90'
-        tsw (float): Sweep time in microseconds. Default: 1e4
+        tsw (float): Dwell time in microseconds. Default: '1e6/sw'
     """
 
     def get_default_parameters(self) -> dict[str, Any]:

@@ -223,7 +223,8 @@ class SimpysonGUI(QMainWindow):
             self,
             'Save File',
             '',
-            'All Supported Files (*.csv *.fid *.spe);;CSV Files (*.csv);;FID Files (*.fid);;SPE Files (*.spe)',
+            'All Supported Files (*.csv *.fid *.spe *.xreim *.csdf);;CSV Files (*.csv);;'
+            'FID Files (*.fid);;SPE Files (*.spe);;XREIM Files (*.xreim);;CSDF Files (*.csdf)',
             options=options
         )
 
@@ -233,7 +234,7 @@ class SimpysonGUI(QMainWindow):
         try:
             format = save_filename.lower().split('.')[-1]
 
-            if format not in ['spe', 'fid', 'csv']:
+            if format not in ['spe', 'fid', 'csv', 'xreim', 'csdf']:
                 QMessageBox.warning(self, 'Save File', 'Unsupported file format!')
                 return
 
@@ -246,15 +247,28 @@ class SimpysonGUI(QMainWindow):
     def open_files(self, filenames):
         for filename in filenames:
             if filename:
-                file_format = filename.split('.')[-1]
+                file_format = Path(filename).suffix.lstrip('.').lower()
                 base_name = Path(filename).name
 
-                data = read_simp(filename, format=file_format)
-
-                if file_format == 'spe':
+                if file_format in ('spe', 'csdf'):
                     view = 'hz'
-                elif file_format == 'fid' or file_format == 'xreim':
+                elif file_format == 'fid':
                     view = 'fid'
+                elif file_format == 'xreim':
+                    view = 'xreim'
+                else:
+                    QMessageBox.warning(
+                        self, 'Open File',
+                        f'Unsupported file format: {base_name}. '
+                        'Supported: .spe, .fid, .xreim, .csdf',
+                    )
+                    continue
+
+                try:
+                    data = read_simp(filename, format=file_format)
+                except (OSError, ValueError) as e:
+                    QMessageBox.warning(self, 'Open File', f'Error reading {base_name}: {e!s}')
+                    continue
 
                 self.files_data[base_name] = {
                     'data': data,
@@ -278,7 +292,7 @@ class SimpysonGUI(QMainWindow):
     def open_file(self):
         options = QFileDialog.Options()
         filenames, _ = QFileDialog.getOpenFileNames(
-            self, 'Open File', '', 'SIMPSON Files (*.spe *.fid *.xreim)', options=options
+            self, 'Open File', '', 'SIMPSON Files (*.spe *.fid *.xreim *.csdf)', options=options
         )
         if filenames:
             self.open_files(filenames)
@@ -329,6 +343,13 @@ class SimpysonGUI(QMainWindow):
                     x_axis = 'time'
                     data_source = 'fid'
                     xlabel = 'Time (ms)'
+                case 'xreim':
+                    if not first_data.xreim:
+                        QMessageBox.warning(self, 'Plot Data', 'No xreim data available.')
+                        return
+                    x_axis = 'time'
+                    data_source = 'xreim'
+                    xlabel = 'Time'
 
             # Plot each selected spectrum
             for item in selected_items:

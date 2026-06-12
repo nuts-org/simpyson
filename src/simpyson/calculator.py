@@ -39,16 +39,27 @@ def _proton_freq_to_b0(proton_freq):
         B0 string suitable for ``hz2ppm`` / ``ppm2hz``, or None if conversion
         is not possible.
     """
+    unit_to_hz = {'hz': 1.0, 'khz': 1e3, 'mhz': 1e6, 'ghz': 1e9, 'thz': 1e12}
+
     if isinstance(proton_freq, (int, float)):
         if proton_freq > 1e6:
             return f"{proton_freq / 1e6:.1f}MHz"
+        # Small numeric values are assumed to already be in MHz
         return f"{proton_freq}MHz"
     if isinstance(proton_freq, str):
-        match = re.match(r'(\d+(?:\.\d+)?)\s*([kMGT]?[Hh]z)?', proton_freq)
+        match = re.match(
+            r'(\d+(?:\.\d+)?)\s*([kMGT]?Hz)?\s*$', proton_freq.strip(),
+            re.IGNORECASE,
+        )
         if match:
             value, unit = match.groups()
-            if not unit or unit.lower() in ('hz', 'khz', 'mhz', 'ghz', 'thz'):
-                return proton_freq if unit else f"{float(value)}MHz"
+            if not unit:
+                return f"{float(value)}MHz"
+            # Normalise any Hz-based unit to MHz, since get_larmor_freq()
+            # only accepts 'T' or 'MHz'.
+            factor = unit_to_hz.get(unit.lower())
+            if factor is not None:
+                return f"{float(value) * factor / 1e6}MHz"
     return None
 
 
@@ -352,21 +363,12 @@ class SimpCalc:
             If ``out_format`` is not one of ``'fid'``, ``'spe'``, ``'xreim'``.
         """
 
-        out_format = self.parameters.get('out_format',
-                     self.output_config.get('format', 'spe'))
-
-
-        out_name = self.parameters.get('out_name',
-                     self.output_config.get('name', '$par(name)'))
-
-        lb = self.parameters.get('lb',
-             self.output_config.get('lb', 20))
-
-        gauss_lb = self.parameters.get('gauss_lb',
-                   self.output_config.get('gauss_lb', 0))
-
-        zerofill = self.parameters.get('zerofill',
-                  self.output_config.get('zerofill', self.parameters.get('np', 0)))
+        # Output settings are popped from kwargs into output_config in __init__
+        out_format = self.output_config.get('format', 'spe')
+        out_name = self.output_config.get('name', '$par(name)')
+        lb = self.output_config.get('lb', 20)
+        gauss_lb = self.output_config.get('gauss_lb', 0)
+        zerofill = self.output_config.get('zerofill', self.parameters.get('np', 0))
 
 
         indent = "    "
@@ -512,11 +514,10 @@ proc main {{}} {{
             return ' '.join(cmd)
 
         # Determine expected output filename/locations
-        out_format = self.parameters.get('out_format',
-                        self.output_config.get('format', 'spe'))
+        # (output settings are popped from kwargs into output_config in __init__)
+        out_format = self.output_config.get('format', 'spe')
 
-        out_name = self.parameters.get('out_name',
-                     self.output_config.get('name', base_filepath))
+        out_name = self.output_config.get('name', base_filepath)
         if out_name == '$par(name)':
             out_name = base_filepath
 
@@ -527,6 +528,10 @@ proc main {{}} {{
             str(Path.cwd() / output_filename),
             f"{out_name}.{out_format}"
         ]
+
+        # Remember which candidate output files already exist, so cleanup
+        # never deletes a pre-existing user file that happens to share a name.
+        preexisting = {loc for loc in possible_locations if Path(loc).exists()}
 
         try:
             cmd = [simpson_executable, filepath]
@@ -593,6 +598,8 @@ proc main {{}} {{
                     Path(filepath).unlink()
 
                 for location in possible_locations:
+                    if location in preexisting:
+                        continue
                     with contextlib.suppress(OSError):
                         Path(location).unlink(missing_ok=True)
 

@@ -245,8 +245,9 @@ class Simpy:
             'time': np.array(time)
         }
 
-        # Clear cached spectrum data
+        # Clear cached spectrum and xreim data
         self._spe_data = None
+        self._xreim_data = None
         return self
 
     def from_spe(
@@ -294,8 +295,9 @@ class Simpy:
         if self._b0 and self._nucleus:
             self._compute_ppm()
 
-        # Clear cached FID data
+        # Clear cached FID and xreim data
         self._fid_data = None
+        self._xreim_data = None
         return self
 
     def from_xreim(
@@ -408,7 +410,8 @@ class Simpy:
         filename : str
             Output file path.
         format : str
-            Output format. One of ``'csv'``, ``'spe'``, ``'fid'``, ``'xreim'``.
+            Output format. One of ``'csv'``, ``'spe'``, ``'fid'``,
+            ``'xreim'``, ``'csdf'``.
 
         Returns
         -------
@@ -446,36 +449,92 @@ class Simpy:
             )
             return self
 
-        # SIMPSON formats
-        data_dict = None
+        # xreim: plain 3-column "time real imag" text, matching what
+        # SIMPSON's `fsave -xreim` produces (and what read_xreim expects).
+        if format == 'xreim':
+            data_dict = self.xreim
+            if data_dict is None and self.fid is not None:
+                # Fall back to FID data, which carries an equivalent time axis
+                data_dict = self.fid
+            if not data_dict:
+                raise ValueError("No data available to save in xreim format")
+
+            with Path(filename).open('w') as f:
+                for t_val, re_val, im_val in zip(
+                    data_dict['time'], data_dict['real'], data_dict['imag'],
+                    strict=True,
+                ):
+                    f.write(f'{t_val} {re_val} {im_val}\n')
+            return self
+
+        # CSDF (CSDM) format via the optional csdmpy dependency
+        if format == 'csdf':
+            self._write_csdf(filename)
+            return self
+
+        # SIMPSON SPE/FID formats
         if format == 'spe':
             data_dict = self.spe
             data_type = 'SPE'
         elif format == 'fid':
             data_dict = self.fid
             data_type = 'FID'
-        elif format == 'xreim':
-            data_dict = self.xreim
-            data_type = 'XREIM'
         else:
             raise ValueError(f"Unsupported save format: {format}")
 
         if not data_dict:
             raise ValueError(f"No data available to save in {format} format")
 
+        # For spectra, preserve the frequency axis: read_spe() reconstructs
+        # hz = sw*(i/np - 0.5) - REF, so derive REF from the actual axis.
+        ref = 0.0
+        if format == 'spe' and 'hz' in data_dict:
+            sw = data_dict['sw']
+            ref = -sw / 2 - data_dict['hz'][0]
+
         # Write SIMPSON format file
         with Path(filename).open('w') as f:
             f.write('SIMP\n')
             if 'np' in data_dict:
-                f.write(f'NP={data_dict["np"]}\n')
+                f.write(f'NP={int(data_dict["np"])}\n')
             if 'sw' in data_dict:
                 f.write(f'SW={data_dict["sw"]}\n')
+            if abs(ref) > 1e-9:
+                f.write(f'REF={ref}\n')
             f.write(f'TYPE={data_type}\n')
             f.write('DATA\n')
 
-            for re_val, im_val in zip(data_dict['real'], data_dict['imag'], strict=False):
+            for re_val, im_val in zip(data_dict['real'], data_dict['imag'], strict=True):
                 f.write(f'{re_val} {im_val}\n')
 
             f.write('END')
 
         return self
+
+    def _write_csdf(self, filename: str) -> None:
+        """Write frequency-domain data to a CSDF (CSDM) file.
+
+        Requires the optional ``csdmpy`` dependency.
+        """
+        import csdmpy as csdm  # noqa: PLC0415
+
+        spe = self.spe
+        if not spe:
+            raise ValueError("No frequency-domain data to save in csdf format")
+
+        hz = np.asarray(spe['hz'], dtype=float)
+        if len(hz) < 2:
+            raise ValueError("Need at least two points to save in csdf format")
+
+        dimension = csdm.LinearDimension(
+            count=len(hz),
+            increment=f"{hz[1] - hz[0]} Hz",
+            coordinates_offset=f"{hz[0]} Hz",
+        )
+        signal = np.asarray(spe['real']) + 1j * np.asarray(spe['imag'])
+        dependent_variable = csdm.as_dependent_variable(signal.astype(np.complex128))
+
+        csdm.CSDM(
+            dimensions=[dimension],
+            dependent_variables=[dependent_variable],
+        ).save(filename)

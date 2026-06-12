@@ -13,8 +13,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - CPMAS pulse sequence template.
 - Support for custom pulse sequences via `CustomPulseSequence`.
 - `Simpy` unified data container with lazy FID/spectrum conversion and automatic ppm calculation.
-- `.csdf` (csdmpy) file format support.
-- Comprehensive test suite (61 tests).
+- `.csdf` (csdmpy) file format support, both reading and writing (`Simpy.write(format='csdf')`).
+- GUI support for opening `.xreim` / `.csdf` files and saving in all supported formats.
+- Comprehensive test suite.
 
 ### Changed
 
@@ -35,6 +36,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - `add_spectra()` accessed private `_spe_data` and crashed on FID-only input.
 - `get_larmor_freq()` had copy-pasted docstring from `hz2ppm()`.
 - Uninitialized variables in `read_spe()` / `read_fid()` gave confusing errors on malformed files.
+- `read_simp()` was called with `format=` while its keyword was `fmt`, crashing `SimpCalc.run(read_output=True)`, `simulate_spectrum()`, and GUI file opening. The keyword is now `format` everywhere.
+- `Simpy.write(format='xreim')` wrote a SIMP-header file without the time axis; it now writes the 3-column `time real imag` format that SIMPSON's `-xreim` flag produces and `read_simp()` expects.
+- `Simpy.write(format='spe')` now preserves a shifted frequency axis via the `REF` header and writes `NP` as an integer.
+- `read_csdf()` underestimated the spectral width by one bin (used the coordinate span instead of N x step).
+- `_proton_freq_to_b0()` passed kHz/GHz strings through unconverted, causing a downstream `ValueError`; all Hz-based units are now normalised to MHz.
+- GUI `open_files()` crashed with `UnboundLocalError` on uppercase or unknown file extensions; unsupported files are now skipped with a warning.
+- `SimpCalc.run()` cleanup no longer deletes pre-existing files that share the output file name.
 
 ## [0.1.1]
 

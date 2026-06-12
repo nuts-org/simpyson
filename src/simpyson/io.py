@@ -160,7 +160,10 @@ def read_csdf(filename: str, simpy_data: Simpy) -> None:
     real = data.dependent_variables[0].components[0].real
     imag = data.dependent_variables[0].components[0].imag
     np_value = len(hz)
-    sw = float(np.abs(hz[-1] - hz[0]))
+    if np_value < 2:
+        raise ValueError(f"CSDF file {filename!r} contains fewer than two points.")
+    # Full spectral width is N * step, not the coordinate span (N-1) * step
+    sw = float(np.abs(hz[1] - hz[0])) * np_value
 
     simpy_data.from_csdf(real, imag, hz, np_value, sw)
 
@@ -183,21 +186,21 @@ _READERS: dict[str, Callable[[str, Simpy], None]] = {
 
 def read_simp(
     filename: str,
-    fmt: str | None = None,
+    format: str | None = None,
     b0: str | None = None,
     nucleus: str | None = None,
 ) -> Simpy:
     """
     Read SIMPSON NMR data from a file into a unified Simpy object.
 
-    The file format is determined from the extension if ``fmt`` is not
+    The file format is determined from the extension if ``format`` is not
     given explicitly.
 
     Parameters
     ----------
     filename : str
         Path to the SIMPSON output file.
-    fmt : str or None
+    format : str or None
         File format (``'spe'``, ``'fid'``, ``'xreim'``, ``'csdf'``).
         If None, guessed from the file extension.
     b0 : str or None
@@ -219,26 +222,26 @@ def read_simp(
     OSError
         If the file cannot be read or parsed.
     """
-    if fmt is not None:
-        fmt = fmt.lower()
+    if format is not None:
+        format = format.lower()
     else:
         ext = Path(filename).suffix.lower()
-        fmt = _EXT_TO_FMT.get(ext)
-        if fmt is None:
+        format = _EXT_TO_FMT.get(ext)
+        if format is None:
             raise ValueError(
                 f"Cannot determine file format of {filename!r}. "
                 f"Supported extensions: {sorted(_EXT_TO_FMT)}"
             )
 
-    reader = _READERS.get(fmt)
+    reader = _READERS.get(format)
     if reader is None:
         raise ValueError(
-            f"Unsupported format {fmt!r}. Supported: {sorted(_READERS)}"
+            f"Unsupported format {format!r}. Supported: {sorted(_READERS)}"
         )
 
     simpy_data = Simpy(b0=b0, nucleus=nucleus)
     try:
         reader(filename, simpy_data)
     except (ValueError, KeyError, IndexError, OSError) as e:
-        raise OSError(f"Error reading {filename!r} as {fmt!r}: {e}") from e
+        raise OSError(f"Error reading {filename!r} as {format!r}: {e}") from e
     return simpy_data
