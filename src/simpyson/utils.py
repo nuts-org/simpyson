@@ -222,7 +222,8 @@ def add_spectra(spectra_list: list, b0: str | None = None, nucleus: str | None =
             sum_imag += np.interp(common_hz, spe['hz'], spe['imag'],
                                   left=0.0, right=0.0)
 
-        common_sw = common_hz[-1] - common_hz[0]
+        # Full spectral width is N * step, not the coordinate span (N-1) * step
+        common_sw = (common_hz[1] - common_hz[0]) * n_common
         result.from_spe(sum_real, sum_imag, n_common, common_sw, common_hz)
 
     if result.b0 and result.nucleus:

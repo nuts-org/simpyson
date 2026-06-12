@@ -104,6 +104,9 @@ class Pulse90(PulseSequenceTemplate):
     """
     Single 90° pulse on 1H.
 
+    On multi-channel spin systems, SIMPSON's ``pulse`` command requires an
+    rf/phase pair per channel; extra channels are padded with ``0 0``.
+
     Parameters:
         pH (float): Pulse length in microseconds. Default: 5.0
         plH (float): Pulse power in Hz. Default: 50000
@@ -116,7 +119,8 @@ class Pulse90(PulseSequenceTemplate):
             'variable_pH': 5.0,
             'variable_plH': 50000,
             'variable_phH': '90',
-            'variable_tsw': '1e6/sw'
+            'variable_tsw': '1e6/sw',
+            'variable_num_channels': 1,
         }
 
     def get_required_parameters(self) -> set[str]:
@@ -127,14 +131,17 @@ class Pulse90(PulseSequenceTemplate):
         return "Single 90° pulse on 1H"
 
     def generate_code(self) -> str:
-        return """
-proc pulseq {} {
+        # SIMPSON requires one "rf phase" pair per channel on the pulse line
+        n_chan = int(self.parameters.get('variable_num_channels', 1))
+        extra = " 0 0" * (n_chan - 1)
+        return f"""
+proc pulseq {{}} {{
     global par
-    pulse $par(pH) $par(plH) $par(phH)
-    acq_block {
+    pulse $par(pH) $par(plH) $par(phH){extra}
+    acq_block {{
         delay $par(tsw)
-    }
-}
+    }}
+}}
 """
 
 class CPMAS(PulseSequenceTemplate):
@@ -143,6 +150,10 @@ class CPMAS(PulseSequenceTemplate):
 
     The initial 1H magnetization is set via ``start_operator`` (e.g. ``I1x``)
     in the SIMPSON par block, so no explicit 90° pulse is needed here.
+
+    Note: ``sw`` does not need to be commensurate with
+    ``spin_rate * gamma_angles``; SIMPSON samples ``acq_block`` at ``1/sw``
+    independently of the block duration (verified empirically).
 
     Parameters:
         pcp (float): Contact pulse length in μs. Default: 1000

@@ -176,7 +176,10 @@ def hz2ppm(
     ValueError
         If the B0 unit is invalid or the nucleus is not found.
     """
-    larmor_freq = get_larmor_freq(b0, nucleus, isotope_file)
+    # SIMPSON places +delta at +delta*|nu_L| regardless of the sign of gamma,
+    # so the axis conversion must use the Larmor frequency magnitude.
+    # Using the signed value mirrored every negative-gamma (29Si, 15N, ...) axis.
+    larmor_freq = abs(get_larmor_freq(b0, nucleus, isotope_file))
     return hz / larmor_freq
 
 
@@ -210,5 +213,6 @@ def ppm2hz(
     ValueError
         If the B0 unit is invalid or the nucleus is not found.
     """
-    larmor_freq = get_larmor_freq(b0, nucleus, isotope_file)
+    # See hz2ppm: SIMPSON's frequency axis convention uses |nu_L|.
+    larmor_freq = abs(get_larmor_freq(b0, nucleus, isotope_file))
     return ppm * larmor_freq

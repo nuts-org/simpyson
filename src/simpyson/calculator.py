@@ -45,16 +45,19 @@ def _proton_freq_to_b0(proton_freq):
         if proton_freq > 1e6:
             return f"{proton_freq / 1e6:.1f}MHz"
         # Small numeric values are assumed to already be in MHz
-        return f"{proton_freq}MHz"
+        return f"{float(proton_freq)}MHz"
     if isinstance(proton_freq, str):
         match = re.match(
-            r'(\d+(?:\.\d+)?)\s*([kMGT]?Hz)?\s*$', proton_freq.strip(),
+            r'(\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)\s*([kMGT]?Hz)?\s*$',
+            proton_freq.strip(),
             re.IGNORECASE,
         )
         if match:
             value, unit = match.groups()
             if not unit:
-                return f"{float(value)}MHz"
+                # Bare numeric strings follow the numeric rule:
+                # > 1e6 means Hz (e.g. '8e8' -> 800 MHz), otherwise MHz.
+                return _proton_freq_to_b0(float(value))
             # Normalise any Hz-based unit to MHz, since get_larmor_freq()
             # only accepts 'T' or 'MHz'.
             factor = unit_to_hz.get(unit.lower())
@@ -80,7 +83,9 @@ def _extract_nucleus(spinsys_str):
     str or None
         Nucleus string (e.g. ``'1H'``, ``'13C'``), or None if not found.
     """
-    channels_match = re.search(r'channels\s+([\w\s]+)', spinsys_str)
+    # [^\n]+ instead of [\w\s]+: \s matches newlines, which made the old
+    # pattern swallow the following spinsys lines as well.
+    channels_match = re.search(r'channels[ \t]+([^\n]+)', spinsys_str)
     if channels_match:
         nuclei_list = channels_match.group(1).split()
         if nuclei_list:
@@ -134,6 +139,11 @@ class SimpCalc:
         Simulation parameters. Required: ``proton_frequency``, ``spin_rate``,
         ``start_operator``, ``detect_operator``, ``np``, ``sw``, ``method``,
         ``crystal_file``, ``gamma_angles``, ``verbose``.
+
+        Output options: ``out_name``, ``out_format``, ``lb``, ``gauss_lb``,
+        ``zerofill``. Note that ``zerofill`` defaults to ``np`` (i.e. no
+        zero-filling); pass e.g. ``zerofill=2*np`` to interpolate the
+        spectrum.
 
     Raises
     ------
@@ -576,7 +586,7 @@ proc main {{}} {{
                     detect_op = self.parameters.get('detect_operator', '')
                     indices = re.findall(r'I(\d+)', detect_op)
                     if indices:
-                        nuclei_match = re.search(r'nuclei\s+([\w\s]+)', spinsys_str)
+                        nuclei_match = re.search(r'nuclei[ \t]+([^\n]+)', spinsys_str)
                         if nuclei_match:
                             nuclei_list = nuclei_match.group(1).split()
                             idx = int(indices[0]) - 1  # SIMPSON is 1-indexed
@@ -705,7 +715,12 @@ def simulate_spectrum(
     spin_rate = params['spin_rate']
 
     if 'sw' not in kwargs:
-        nu_l_hz = get_larmor_freq(b0, nucleus) * 1e6
+        # get_larmor_freq() is signed (follows gamma). Spectral widths must use
+        # the magnitude, or every negative-gamma nucleus gets a collapsed /
+        # negative SW. The sign itself is still needed for the carrier offset.
+        nu_l_signed = get_larmor_freq(b0, nucleus)
+        gamma_sign = 1.0 if nu_l_signed >= 0 else -1.0
+        nu_l_hz = abs(nu_l_signed) * 1e6
         is_ct = _is_ct_operator(params['detect_operator'])
 
         if shifts:
@@ -723,11 +738,14 @@ def simulate_spectrum(
                 # Floor at 10 ppm so a single peak gets a usable window
                 required_sw = max(width_hz * 2, nu_l_hz * 10e-6)
 
-            offset_value = center_hz   # positive: shift carrier toward peaks
+            # The carrier offset is a rotating-frame frequency and follows the
+            # sign of gamma; the REF correction acts on the (sign-free) absolute
+            # axis, so it is always -center_hz. Verified empirically against
+            # SIMPSON for both gamma signs (13C and 29Si).
             if 'variable_offset' not in kwargs:
-                params['variable_offset'] = offset_value
+                params['variable_offset'] = gamma_sign * center_hz
             if 'variable_ref' not in kwargs:
-                params['variable_ref'] = -offset_value
+                params['variable_ref'] = -center_hz
 
         elif quadrupoles:
             max_cq = max(quadrupoles)

@@ -43,6 +43,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - `_proton_freq_to_b0()` passed kHz/GHz strings through unconverted, causing a downstream `ValueError`; all Hz-based units are now normalised to MHz.
 - GUI `open_files()` crashed with `UnboundLocalError` on uppercase or unknown file extensions; unsupported files are now skipped with a warning.
 - `SimpCalc.run()` cleanup no longer deletes pre-existing files that share the output file name.
+- `hz2ppm()` / `ppm2hz()` used the signed Larmor frequency, mirroring the ppm axis of every negative-gamma nucleus (e.g. 29Si, 15N, 17O). SIMPSON places +delta at +delta*|nu_L| regardless of the sign of gamma, so both conversions now use the magnitude (verified empirically against SIMPSON for 13C and 29Si).
+- `simulate_spectrum()` spectral-width estimation used the signed Larmor frequency, collapsing the SW for negative-gamma nuclei; widths now use |nu_L|.
+- `simulate_spectrum()` auto-centering put negative-gamma peaks off by 2x the center: the carrier `offset` follows the sign of gamma (rotating-frame frequency) while `ref` is always `-center_hz` (absolute axis).
+- `_proton_freq_to_b0()` rejected scientific notation; `'8e8'` now parses to `'800.0MHz'`.
+- `channels`/`nuclei` extraction regexes used `[\w\s]+`, which matches newlines and swallowed the following spinsys lines, so per-site nucleus detection from `detect_operator` could pick a token from the wrong line.
+- `pulse_90` template failed on multi-channel spin systems (`pulse: arguments must match number of channels`); extra channels are now padded with `0 0`.
+- `add_spectra()` set the combined spectral width to the coordinate span ((N-1) x step) instead of N x step when interpolating onto a common grid.
 
 ## [0.1.1]
 
