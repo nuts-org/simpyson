@@ -169,3 +169,19 @@ class TestAddSpectra:
 
         _ = add_spectra([s1, s2])
         np.testing.assert_array_equal(s1.spe['real'], original1)
+
+
+def test_add_spectra_common_sw_is_increment_times_np():
+    """sw must equal increment * np, not end-minus-start (one-bin difference)."""
+    npoints = 64
+    sw = 8000.0
+    hz_a = sw * (np.arange(npoints) / npoints - 0.5)
+    hz_b = hz_a + 2000.0  # shifted axis forces interpolation path
+    rng = np.random.default_rng(0)
+    a = _make_spe(rng.normal(size=npoints), sw=sw, hz=hz_a)
+    b = _make_spe(rng.normal(size=npoints), sw=sw, hz=hz_b)
+
+    combined = add_spectra([a, b])
+    spe = combined.spe
+    step = spe['hz'][1] - spe['hz'][0]
+    assert spe['sw'] == pytest.approx(step * spe['np'])
