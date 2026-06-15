@@ -398,7 +398,7 @@ class SimpysonGUI(QMainWindow):
             with temp_path.open('w', encoding='utf-8') as f:
                 f.write(html_content)
 
-            self.browser.load(QUrl.fromLocalFile(temp_path))
+            self.browser.load(QUrl.fromLocalFile(str(temp_path)))
         else:
             self.browser.setHtml('<html><body><h3 style="text-align:center;margin-top:40px;color:#888;">No data to display</h3></body></html>')
             QMessageBox.warning(self, 'Plot Data', 'No data to plot!')

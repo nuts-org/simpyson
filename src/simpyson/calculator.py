@@ -218,7 +218,7 @@ class SimpCalc:
     def _setup_pulse_sequence(self, pulse_sequence: str | PulseSequenceTemplate | None) -> PulseSequenceTemplate | None:
         """Set up the pulse sequence based on user input."""
         if pulse_sequence is None:
-             return None
+            return None
 
         if isinstance(pulse_sequence, str):
             if pulse_sequence in pulseq_templates:

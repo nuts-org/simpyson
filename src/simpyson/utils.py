@@ -39,8 +39,13 @@ def _load_isotope_data(nucleus: str, isotope_file: str | None = None) -> dict:
     if isotope_file is None:
         isotope_file = _default_isotope_file()
 
-    mass_number = int(''.join(filter(str.isdigit, nucleus)))
-    element = ''.join(filter(str.isalpha, nucleus)).capitalize()
+    digits = ''.join(filter(str.isdigit, nucleus))
+    letters = ''.join(filter(str.isalpha, nucleus))
+    if not digits or not letters:
+        raise ValueError(f"Invalid nucleus {nucleus!r}. Expected a mass number + element, e.g. '13C'.")
+
+    mass_number = int(digits)
+    element = letters.capitalize()
 
     with Path(isotope_file).open() as f:
         data = json.load(f)
