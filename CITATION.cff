@@ -1,0 +1,60 @@
+cff-version: 1.2.0
+title: Simpyson
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Carlos
+    family-names: Bornes
+    affiliation: >-
+      Department of Physical and Macromolecular Chemistry,
+      Faculty of Science, Charles University in Prague, 128
+      43, Prague, Czech Republic
+    orcid: 'https://orcid.org/0000-0002-0325-2356'
+  - given-names: Márcio
+    family-names: Soares
+    affiliation: >-
+      Department of Chemistry & CICECO-Aveiro Institute of
+      Materials, University of Aveiro, 3810-193, Aveiro,
+      Portugal
+    orcid: 'https://orcid.org/0000-0001-8012-2662'
+  - given-names: Daniel
+    family-names: Pereira
+    affiliation: >-
+      Institute of Molecular Physical Science,
+      Department of Chemistry and Applied Biosciences,
+      ETH Zürich, Vladimir-Prelog-Weg 1-5 / 10,
+      8093 Zurich, Switzerland
+    orcid: 'https://orcid.org/0000-0001-7329-2516'
+  - given-names: J. Kane
+    family-names: Shenton
+    affiliation: >-
+      Scientific Computing, Science & Technology Facilities
+      Council, Rutherford Appleton Laboratory, Harwell Science
+      Campus, Oxfordshire, OX11 0QX, United Kingdom
+    orcid: 'https://orcid.org/0000-0003-4485-3446'
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.20042403
+repository-code: 'https://github.com/nuts-org/simpyson'
+url: 'https://nuts-org.github.io/simpyson/'
+abstract: >-
+  Simpyson is a Python interface to the SIMPSON solid-state NMR simulation
+  software. It provides tools for building SIMPSON input files from DFT
+  outputs (VASP, CASTEP, Quantum ESPRESSO), running simulations
+  programmatically, and reading simulation results into a unified data
+  container. Key features include automatic spectral width and offset
+  estimation, built-in pulse sequence templates (including CPMAS), CSDM
+  file support for interoperability with EasyNMR, and an interactive GUI
+  for visualising and combining spectra.
+keywords:
+  - solid-state NMR
+  - NMR simulation
+  - SIMPSON
+  - DFT
+  - computational chemistry
+  - Python
+license: MIT
+version: 0.2.0
+date-released: '2026-05-20'

@@ -2,13 +2,13 @@
     "Ir": {
         "191": {
             "Spin": "3/2",
-            "NatAbudance": 37.3,
+            "NatAbundance": 37.3,
             "Gamma": 0.4812,
             "QMoment": 81.6
         },
         "193": {
             "Spin": "3/2",
-            "NatAbudance": 62.7,
+            "NatAbundance": 62.7,
             "Gamma": 0.5227,
             "QMoment": 75.1
         }
@@ -16,7 +16,7 @@
     "Au": {
         "197": {
             "Spin": "3/2",
-            "NatAbudance": 100,
+            "NatAbundance": 100,
             "Gamma": 0.47306,
             "QMoment": 54.7
         }
@@ -24,7 +24,7 @@
     "U": {
         "235": {
             "Spin": "7/2",
-            "NatAbudance": 0.72,
+            "NatAbundance": 0.72,
             "Gamma": -0.52,
             "QMoment": 493.6
         }
@@ -32,13 +32,13 @@
     "Os": {
         "187": {
             "Spin": "1/2",
-            "NatAbudance": 1.96,
+            "NatAbundance": 1.96,
             "Gamma": 0.61929,
             "QMoment": 0
         },
         "189": {
             "Spin": "3/2",
-            "NatAbudance": 16.15,
+            "NatAbundance": 16.15,
             "Gamma": 2.10713,
             "QMoment": 85.6
         }
@@ -46,13 +46,13 @@
     "Hf": {
         "179": {
             "Spin": "9/2",
-            "NatAbudance": 13.62,
+            "NatAbundance": 13.62,
             "Gamma": -0.6821,
             "QMoment": 379.3
         },
         "177": {
             "Spin": "7/2",
-            "NatAbudance": 18.6,
+            "NatAbundance": 18.6,
             "Gamma": 1.086,
             "QMoment": 336.5
         }
@@ -60,19 +60,19 @@
     "K": {
         "41": {
             "Spin": "3/2",
-            "NatAbudance": 6.7302,
+            "NatAbundance": 6.7302,
             "Gamma": 0.68607,
             "QMoment": 7.11
         },
         "39": {
             "Spin": "3/2",
-            "NatAbudance": 93.2581,
+            "NatAbundance": 93.2581,
             "Gamma": 1.25006,
             "QMoment": 5.85
         },
         "40": {
             "Spin": 4,
-            "NatAbudance": 0.0117,
+            "NatAbundance": 0.0117,
             "Gamma": -1.55429,
             "QMoment": -7.3
         }
@@ -80,7 +80,7 @@
     "Er": {
         "167": {
             "Spin": "7/2",
-            "NatAbudance": 22.93,
+            "NatAbundance": 22.93,
             "Gamma": -0.77157,
             "QMoment": 356.5
         }
@@ -88,13 +88,13 @@
     "Gd": {
         "155": {
             "Spin": "3/2",
-            "NatAbudance": 14.8,
+            "NatAbundance": 14.8,
             "Gamma": -0.82132,
             "QMoment": 127
         },
         "157": {
             "Spin": "3/2",
-            "NatAbudance": 15.65,
+            "NatAbundance": 15.65,
             "Gamma": -1.0769,
             "QMoment": 135
         }
@@ -102,7 +102,7 @@
     "Rh": {
         "103": {
             "Spin": "1/2",
-            "NatAbudance": 100,
+            "NatAbundance": 100,
             "Gamma": -0.8468,
             "QMoment": 0
         }
@@ -110,7 +110,7 @@
     "Fe": {
         "57": {
             "Spin": "1/2",
-            "NatAbudance": 2.119,
+            "NatAbundance": 2.119,
             "Gamma": 0.86806,
             "QMoment": 0
         }
@@ -118,13 +118,13 @@
     "Nd": {
         "145": {
             "Spin": "7/2",
-            "NatAbudance": 8.3,
+            "NatAbundance": 8.3,
             "Gamma": -0.898,
             "QMoment": -33
         },
         "143": {
             "Spin": "7/2",
-            "NatAbudance": 12.2,
+            "NatAbundance": 12.2,
             "Gamma": -1.457,
             "QMoment": -63
         }
@@ -132,13 +132,13 @@
     "Dy": {
         "161": {
             "Spin": "5/2",
-            "NatAbudance": 18.91,
+            "NatAbundance": 18.91,
             "Gamma": -0.9201,
             "QMoment": 250.7
         },
         "163": {
             "Spin": "5/2",
-            "NatAbudance": 24.9,
+            "NatAbundance": 24.9,
             "Gamma": 1.289,
             "QMoment": 264.8
         }
@@ -146,13 +146,13 @@
     "Sm": {
         "149": {
             "Spin": "7/2",
-            "NatAbudance": 13.82,
+            "NatAbundance": 13.82,
             "Gamma": -0.9192,
             "QMoment": 7.4
         },
         "147": {
             "Spin": "7/2",
-            "NatAbudance": 14.99,
+            "NatAbundance": 14.99,
             "Gamma": -1.115,
             "QMoment": -25.9
         }
@@ -160,7 +160,7 @@
     "Ge": {
         "73": {
             "Spin": "9/2",
-            "NatAbudance": 7.73,
+            "NatAbundance": 7.73,
             "Gamma": -0.93603,
             "QMoment": -19.6
         }
@@ -168,7 +168,7 @@
     "Kr": {
         "83": {
             "Spin": "9/2",
-            "NatAbudance": 11.49,
+            "NatAbundance": 11.49,
             "Gamma": -1.0331,
             "QMoment": 25.9
         }
@@ -176,13 +176,13 @@
     "Ag": {
         "107": {
             "Spin": "1/2",
-            "NatAbudance": 51.839,
+            "NatAbundance": 51.839,
             "Gamma": -1.08892,
             "QMoment": 0
         },
         "109": {
             "Spin": "1/2",
-            "NatAbudance": 48.161,
+            "NatAbundance": 48.161,
             "Gamma": -1.25186,
             "QMoment": 0
         }
@@ -190,7 +190,7 @@
     "W": {
         "183": {
             "Spin": "1/2",
-            "NatAbudance": 14.31,
+            "NatAbundance": 14.31,
             "Gamma": 1.12824,
             "QMoment": 0
         }
@@ -198,7 +198,7 @@
     "Sr": {
         "87": {
             "Spin": "9/2",
-            "NatAbudance": 7,
+            "NatAbundance": 7,
             "Gamma": -1.16394,
             "QMoment": 33.5
         }
@@ -206,7 +206,7 @@
     "Pd": {
         "105": {
             "Spin": "5/2",
-            "NatAbudance": 22.33,
+            "NatAbundance": 22.33,
             "Gamma": -1.23,
             "QMoment": 66
         }
@@ -214,13 +214,13 @@
     "Ru": {
         "99": {
             "Spin": "5/2",
-            "NatAbudance": 12.76,
+            "NatAbundance": 12.76,
             "Gamma": -1.229,
             "QMoment": 7.9
         },
         "101": {
             "Spin": "5/2",
-            "NatAbudance": 17.06,
+            "NatAbundance": 17.06,
             "Gamma": -1.377,
             "QMoment": 45.7
         }
@@ -228,13 +228,13 @@
     "Yb": {
         "173": {
             "Spin": "5/2",
-            "NatAbudance": 16.13,
+            "NatAbundance": 16.13,
             "Gamma": -1.3025,
             "QMoment": 280
         },
         "171": {
             "Spin": "1/2",
-            "NatAbudance": 14.28,
+            "NatAbundance": 14.28,
             "Gamma": 4.7288,
             "QMoment": 0
         }
@@ -242,7 +242,7 @@
     "Y": {
         "89": {
             "Spin": "1/2",
-            "NatAbudance": 100,
+            "NatAbundance": 100,
             "Gamma": -1.31628,
             "QMoment": 0
         }
@@ -250,13 +250,13 @@
     "Ti": {
         "47": {
             "Spin": "5/2",
-            "NatAbudance": 7.44,
+            "NatAbundance": 7.44,
             "Gamma": -1.5105,
             "QMoment": 30.2
         },
         "49": {
             "Spin": "7/2",
-            "NatAbudance": 5.41,
+            "NatAbundance": 5.41,
             "Gamma": -1.51095,
             "QMoment": 24.7
         }
@@ -264,7 +264,7 @@
     "Cr": {
         "53": {
             "Spin": "3/2",
-            "NatAbudance": 9.501,
+            "NatAbundance": 9.501,
             "Gamma": -1.5152,
             "QMoment": -15
         }
@@ -272,7 +272,7 @@
     "Mg": {
         "25": {
             "Spin": "5/2",
-            "NatAbudance": 10,
+            "NatAbundance": 10,
             "Gamma": -1.63887,
             "QMoment": 19.94
         }
@@ -280,7 +280,7 @@
     "Zn": {
         "67": {
             "Spin": "5/2",
-            "NatAbudance": 4.1,
+            "NatAbundance": 4.1,
             "Gamma": 1.67669,
             "QMoment": 15
         }
@@ -288,13 +288,13 @@
     "Mo": {
         "95": {
             "Spin": "5/2",
-            "NatAbudance": 15.92,
+            "NatAbundance": 15.92,
             "Gamma": -1.751,
             "QMoment": -2.2
         },
         "97": {
             "Spin": "5/2",
-            "NatAbudance": 9.55,
+            "NatAbundance": 9.55,
             "Gamma": -1.788,
             "QMoment": 25.5
         }
@@ -302,13 +302,13 @@
     "Hg": {
         "201": {
             "Spin": "3/2",
-            "NatAbudance": 13.18,
+            "NatAbundance": 13.18,
             "Gamma": -1.78877,
             "QMoment": 38.6
         },
         "199": {
             "Spin": "1/2",
-            "NatAbudance": 16.87,
+            "NatAbundance": 16.87,
             "Gamma": 4.84579,
             "QMoment": 0
         }
@@ -316,7 +316,7 @@
     "Ca": {
         "43": {
             "Spin": "7/2",
-            "NatAbudance": 0.135,
+            "NatAbundance": 0.135,
             "Gamma": -1.80307,
             "QMoment": -4.08
         }
@@ -324,13 +324,13 @@
     "N": {
         "14": {
             "Spin": "1",
-            "NatAbudance": 99.632,
+            "NatAbundance": 99.632,
             "Gamma": 1.93378,
             "QMoment": 2.044
         },
         "15": {
             "Spin": "1/2",
-            "NatAbudance": 0.368,
+            "NatAbundance": 0.368,
             "Gamma": -2.71262,
             "QMoment": 0
         }
@@ -338,7 +338,7 @@
     "S": {
         "33": {
             "Spin": "3/2",
-            "NatAbudance": 0.76,
+            "NatAbundance": 0.76,
             "Gamma": 2.05568,
             "QMoment": -6.78
         }
@@ -346,7 +346,7 @@
     "Ne": {
         "21": {
             "Spin": "3/2",
-            "NatAbudance": 0.27,
+            "NatAbundance": 0.27,
             "Gamma": -2.11308,
             "QMoment": 10.155
         }
@@ -354,13 +354,13 @@
     "Lu": {
         "176": {
             "Spin": "7",
-            "NatAbudance": 2.59,
+            "NatAbundance": 2.59,
             "Gamma": 2.1684,
             "QMoment": 497
         },
         "175": {
             "Spin": "7/2",
-            "NatAbudance": 97.41,
+            "NatAbundance": 97.41,
             "Gamma": 3.0552,
             "QMoment": 349
         }
@@ -368,13 +368,13 @@
     "Cl": {
         "37": {
             "Spin": "3/2",
-            "NatAbudance": 24.22,
+            "NatAbundance": 24.22,
             "Gamma": 2.18437,
             "QMoment": -6.435
         },
         "35": {
             "Spin": "3/2",
-            "NatAbudance": 75.78,
+            "NatAbundance": 75.78,
             "Gamma": 2.6242,
             "QMoment": -8.165
         }
@@ -382,13 +382,13 @@
     "Xe": {
         "131": {
             "Spin": "3/2",
-            "NatAbudance": 21.18,
+            "NatAbundance": 21.18,
             "Gamma": 2.20908,
             "QMoment": -11.4
         },
         "129": {
             "Spin": "1/2",
-            "NatAbudance": 26.44,
+            "NatAbundance": 26.44,
             "Gamma": -7.4521,
             "QMoment": 0
         }
@@ -396,7 +396,7 @@
     "Tm": {
         "169": {
             "Spin": "1/2",
-            "NatAbudance": 100,
+            "NatAbundance": 100,
             "Gamma": -2.218,
             "QMoment": 0
         }
@@ -404,7 +404,7 @@
     "Ni": {
         "61": {
             "Spin": "3/2",
-            "NatAbudance": 1.1399,
+            "NatAbundance": 1.1399,
             "Gamma": -2.3948,
             "QMoment": 16.2
         }
@@ -412,7 +412,7 @@
     "Zr": {
         "91": {
             "Spin": "5/2",
-            "NatAbudance": 11.22,
+            "NatAbundance": 11.22,
             "Gamma": -2.49743,
             "QMoment": -17.6
         }
@@ -420,13 +420,13 @@
     "Rb": {
         "85": {
             "Spin": "5/2",
-            "NatAbudance": 72.17,
+            "NatAbundance": 72.17,
             "Gamma": 2.59271,
             "QMoment": 27.6
         },
         "87": {
             "Spin": "3/2",
-            "NatAbudance": 27.83,
+            "NatAbundance": 27.83,
             "Gamma": 8.7864,
             "QMoment": 13.35
         }
@@ -434,13 +434,13 @@
     "Ba": {
         "135": {
             "Spin": "3/2",
-            "NatAbudance": 6.592,
+            "NatAbundance": 6.592,
             "Gamma": 2.6755,
             "QMoment": 16
         },
         "137": {
             "Spin": "3/2",
-            "NatAbudance": 11.232,
+            "NatAbundance": 11.232,
             "Gamma": 2.99295,
             "QMoment": 24.5
         }
@@ -448,13 +448,13 @@
     "V": {
         "50": {
             "Spin": 6,
-            "NatAbudance": 0.25,
+            "NatAbundance": 0.25,
             "Gamma": 2.67065,
             "QMoment": 21
         },
         "51": {
             "Spin": "7/2",
-            "NatAbudance": 99.75,
+            "NatAbundance": 99.75,
             "Gamma": 7.04551,
             "QMoment": -5.2
         }
@@ -462,13 +462,13 @@
     "B": {
         "10": {
             "Spin": "3",
-            "NatAbudance": 19.9,
+            "NatAbundance": 19.9,
             "Gamma": 2.87468,
             "QMoment": 8.459
         },
         "11": {
             "Spin": "3/2",
-            "NatAbudance": 80.1,
+            "NatAbundance": 80.1,
             "Gamma": 8.5847,
             "QMoment": 4.059
         }
@@ -476,13 +476,13 @@
     "Eu": {
         "153": {
             "Spin": "5/2",
-            "NatAbudance": 52.19,
+            "NatAbundance": 52.19,
             "Gamma": 2.9369,
             "QMoment": 241.2
         },
         "151": {
             "Spin": "5/2",
-            "NatAbudance": 47.81,
+            "NatAbundance": 47.81,
             "Gamma": 6.651,
             "QMoment": 90.3
         }
@@ -490,7 +490,7 @@
     "Ta": {
         "181": {
             "Spin": "7/2",
-            "NatAbudance": 99.988,
+            "NatAbundance": 99.988,
             "Gamma": 3.2438,
             "QMoment": 317
         }
@@ -498,13 +498,13 @@
     "Sb": {
         "123": {
             "Spin": "7/2",
-            "NatAbudance": 42.79,
+            "NatAbundance": 42.79,
             "Gamma": 3.4892,
             "QMoment": -49
         },
         "121": {
             "Spin": "5/2",
-            "NatAbudance": 57.21,
+            "NatAbundance": 57.21,
             "Gamma": 6.4435,
             "QMoment": -36
         }
@@ -512,7 +512,7 @@
     "Cs": {
         "133": {
             "Spin": "7/2",
-            "NatAbudance": 100,
+            "NatAbundance": 100,
             "Gamma": 3.53325,
             "QMoment": -0.343
         }
@@ -520,13 +520,13 @@
     "La": {
         "138": {
             "Spin": "5",
-            "NatAbudance": 0.09,
+            "NatAbundance": 0.09,
             "Gamma": 3.55724,
             "QMoment": 45
         },
         "139": {
             "Spin": "7/2",
-            "NatAbudance": 99.91,
+            "NatAbundance": 99.91,
             "Gamma": 3.80833,
             "QMoment": 20
         }
@@ -534,7 +534,7 @@
     "O": {
         "17": {
             "Spin": "5/2",
-            "NatAbudance": 0.038,
+            "NatAbundance": 0.038,
             "Gamma": -3.62808,
             "QMoment": -2.558
         }
@@ -542,7 +542,7 @@
     "Be": {
         "9": {
             "Spin": "3/2",
-            "NatAbudance": 100,
+            "NatAbundance": 100,
             "Gamma": -3.75967,
             "QMoment": 5.288
         }
@@ -550,13 +550,13 @@
     "Li": {
         "6": {
             "Spin": "1",
-            "NatAbudance": 7.59,
+            "NatAbundance": 7.59,
             "Gamma": 3.93717,
             "QMoment": -0.0808
         },
         "7": {
             "Spin": "3/2",
-            "NatAbudance": 92.41,
+            "NatAbundance": 92.41,
             "Gamma": 10.3977,
             "QMoment": -4.01
         }
@@ -564,19 +564,19 @@
     "H": {
         "2": {
             "Spin": "1",
-            "NatAbudance": 0.0115,
+            "NatAbundance": 0.0115,
             "Gamma": 4.10663,
             "QMoment": 0.286
         },
         "1": {
             "Spin": "1/2",
-            "NatAbudance": 99.9885,
+            "NatAbundance": 99.9885,
             "Gamma": 26.75221,
             "QMoment": 0
         },
         "3": {
             "Spin": "1/2",
-            "NatAbudance": 0,
+            "NatAbundance": 0,
             "Gamma": 28.53498,
             "QMoment": 0
         }
@@ -584,7 +584,7 @@
     "Bi": {
         "209": {
             "Spin": "9/2",
-            "NatAbudance": 100,
+            "NatAbundance": 100,
             "Gamma": 4.375,
             "QMoment": -51.6
         }
@@ -592,7 +592,7 @@
     "As": {
         "75": {
             "Spin": "3/2",
-            "NatAbudance": 100,
+            "NatAbundance": 100,
             "Gamma": 4.59616,
             "QMoment": 31.4
         }
@@ -600,7 +600,7 @@
     "Se": {
         "77": {
             "Spin": "1/2",
-            "NatAbudance": 7.63,
+            "NatAbundance": 7.63,
             "Gamma": 5.12539,
             "QMoment": 0
         }
@@ -608,7 +608,7 @@
     "Si": {
         "29": {
             "Spin": "1/2",
-            "NatAbudance": 4.6832,
+            "NatAbundance": 4.6832,
             "Gamma": -5.319,
             "QMoment": 0
         }
@@ -616,7 +616,7 @@
     "I": {
         "127": {
             "Spin": "5/2",
-            "NatAbudance": 100,
+            "NatAbundance": 100,
             "Gamma": 5.38957,
             "QMoment": -71
         }
@@ -624,7 +624,7 @@
     "Pb": {
         "207": {
             "Spin": "1/2",
-            "NatAbudance": 22.1,
+            "NatAbundance": 22.1,
             "Gamma": 5.58046,
             "QMoment": 0
         }
@@ -632,13 +632,13 @@
     "Cd": {
         "111": {
             "Spin": "1/2",
-            "NatAbudance": 12.8,
+            "NatAbundance": 12.8,
             "Gamma": -5.69831,
             "QMoment": 0
         },
         "113": {
             "Spin": "1/2",
-            "NatAbudance": 12.22,
+            "NatAbundance": 12.22,
             "Gamma": -5.96092,
             "QMoment": 0
         }
@@ -646,7 +646,7 @@
     "Ho": {
         "165": {
             "Spin": "7/2",
-            "NatAbudance": 100,
+            "NatAbundance": 100,
             "Gamma": 5.71,
             "QMoment": 358
         }
@@ -654,7 +654,7 @@
     "Pt": {
         "195": {
             "Spin": "1/2",
-            "NatAbudance": 33.832,
+            "NatAbundance": 33.832,
             "Gamma": 5.8385,
             "QMoment": 0
         }
@@ -662,13 +662,13 @@
     "In": {
         "113": {
             "Spin": "9/2",
-            "NatAbudance": 4.29,
+            "NatAbundance": 4.29,
             "Gamma": 5.8845,
             "QMoment": 79.9
         },
         "115": {
             "Spin": "9/2",
-            "NatAbudance": 95.71,
+            "NatAbundance": 95.71,
             "Gamma": 5.8972,
             "QMoment": 81
         }
@@ -676,7 +676,7 @@
     "Tc": {
         "99": {
             "Spin": "9/2",
-            "NatAbudance": 0,
+            "NatAbundance": 0,
             "Gamma": 6.046,
             "QMoment": -12.9
         }
@@ -684,13 +684,13 @@
     "Re": {
         "185": {
             "Spin": "5/2",
-            "NatAbudance": 37.4,
+            "NatAbundance": 37.4,
             "Gamma": 6.1057,
             "QMoment": 218
         },
         "187": {
             "Spin": "5/2",
-            "NatAbudance": 62.6,
+            "NatAbundance": 62.6,
             "Gamma": 6.1682,
             "QMoment": 207
         }
@@ -698,7 +698,7 @@
     "Co": {
         "59": {
             "Spin": "7/2",
-            "NatAbudance": 100,
+            "NatAbundance": 100,
             "Gamma": 6.332,
             "QMoment": 42
         }
@@ -706,13 +706,13 @@
     "Ga": {
         "69": {
             "Spin": "3/2",
-            "NatAbudance": 60.108,
+            "NatAbundance": 60.108,
             "Gamma": 6.43886,
             "QMoment": 17.1
         },
         "71": {
             "Spin": "3/2",
-            "NatAbudance": 39.892,
+            "NatAbundance": 39.892,
             "Gamma": 8.18117,
             "QMoment": 10.7
         }
@@ -720,7 +720,7 @@
     "Tb": {
         "159": {
             "Spin": "3/2",
-            "NatAbudance": 100,
+            "NatAbundance": 100,
             "Gamma": 6.431,
             "QMoment": 143.2
         }
@@ -728,7 +728,7 @@
     "Sc": {
         "45": {
             "Spin": "7/2",
-            "NatAbudance": 100,
+            "NatAbundance": 100,
             "Gamma": 6.5088,
             "QMoment": -22
         }
@@ -736,7 +736,7 @@
     "Nb": {
         "93": {
             "Spin": "9/2",
-            "NatAbudance": 100,
+            "NatAbundance": 100,
             "Gamma": 6.5674,
             "QMoment": -32
         }
@@ -744,7 +744,7 @@
     "Mn": {
         "55": {
             "Spin": "5/2",
-            "NatAbudance": 100,
+            "NatAbundance": 100,
             "Gamma": 6.64525,
             "QMoment": 33
         }
@@ -752,13 +752,13 @@
     "Br": {
         "79": {
             "Spin": "3/2",
-            "NatAbudance": 50.69,
+            "NatAbundance": 50.69,
             "Gamma": 6.72562,
             "QMoment": 31.3
         },
         "81": {
             "Spin": "3/2",
-            "NatAbudance": 49.31,
+            "NatAbundance": 49.31,
             "Gamma": 7.24978,
             "QMoment": 26.2
         }
@@ -766,7 +766,7 @@
     "C": {
         "13": {
             "Spin": "1/2",
-            "NatAbudance": 1.07,
+            "NatAbundance": 1.07,
             "Gamma": 6.72828,
             "QMoment": 0
         }
@@ -774,7 +774,7 @@
     "Al": {
         "27": {
             "Spin": "5/2",
-            "NatAbudance": 100,
+            "NatAbundance": 100,
             "Gamma": 6.97627,
             "QMoment": 14.66
         }
@@ -782,13 +782,13 @@
     "Te": {
         "123": {
             "Spin": "1/2",
-            "NatAbudance": 0.89,
+            "NatAbundance": 0.89,
             "Gamma": -7.0591,
             "QMoment": 0
         },
         "125": {
             "Spin": "1/2",
-            "NatAbudance": 7.07,
+            "NatAbundance": 7.07,
             "Gamma": -8.51084,
             "QMoment": 0
         }
@@ -796,7 +796,7 @@
     "Na": {
         "23": {
             "Spin": "3/2",
-            "NatAbudance": 100,
+            "NatAbundance": 100,
             "Gamma": 7.08085,
             "QMoment": 10.4
         }
@@ -804,13 +804,13 @@
     "Cu": {
         "63": {
             "Spin": "3/2",
-            "NatAbudance": 69.17,
+            "NatAbundance": 69.17,
             "Gamma": 7.11179,
             "QMoment": -22
         },
         "65": {
             "Spin": "3/2",
-            "NatAbudance": 30.83,
+            "NatAbundance": 30.83,
             "Gamma": 7.60435,
             "QMoment": -20.4
         }
@@ -818,7 +818,7 @@
     "Pr": {
         "141": {
             "Spin": "5/2",
-            "NatAbudance": 100,
+            "NatAbundance": 100,
             "Gamma": 8.1907,
             "QMoment": -5.89
         }
@@ -826,19 +826,19 @@
     "Sn": {
         "115": {
             "Spin": "1/2",
-            "NatAbudance": 0.34,
+            "NatAbundance": 0.34,
             "Gamma": -8.8013,
             "QMoment": 0
         },
         "117": {
             "Spin": "1/2",
-            "NatAbudance": 7.68,
+            "NatAbundance": 7.68,
             "Gamma": -9.58879,
             "QMoment": 0
         },
         "119": {
             "Spin": "1/2",
-            "NatAbudance": 8.59,
+            "NatAbundance": 8.59,
             "Gamma": -10.0317,
             "QMoment": 0
         }
@@ -846,7 +846,7 @@
     "P": {
         "31": {
             "Spin": "1/2",
-            "NatAbudance": 100,
+            "NatAbundance": 100,
             "Gamma": 10.8394,
             "QMoment": 0
         }
@@ -854,13 +854,13 @@
     "Tl": {
         "203": {
             "Spin": "1/2",
-            "NatAbudance": 29.524,
+            "NatAbundance": 29.524,
             "Gamma": 15.53933,
             "QMoment": 0
         },
         "205": {
             "Spin": "1/2",
-            "NatAbudance": 70.476,
+            "NatAbundance": 70.476,
             "Gamma": 15.69218,
             "QMoment": 0
         }
@@ -868,7 +868,7 @@
     "He": {
         "3": {
             "Spin": "1/2",
-            "NatAbudance": 0.00014,
+            "NatAbundance": 0.00014,
             "Gamma": -20.38016,
             "QMoment": 0
         }
@@ -876,7 +876,7 @@
     "F": {
         "19": {
             "Spin": "1/2",
-            "NatAbudance": 100,
+            "NatAbundance": 100,
             "Gamma": 25.18148,
             "QMoment": 0
         }

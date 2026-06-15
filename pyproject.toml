@@ -5,9 +5,9 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "simpyson"
 description="A python interface to Simpson"
-version = "0.1.1"
+version = "0.2.0"
 readme = "README.md"
-license = { text = "BSD-3" }
+license = { text = "MIT" }
 authors = [
     { name = "Carlos Bornes"},
     { name = "Daniel Pereira"},
@@ -18,19 +18,21 @@ classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Science/Research",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
-    "Intended Audience :: Science/Research",
     "Topic :: Scientific/Engineering",
     "Operating System :: Microsoft :: Windows",
     "Operating System :: Unix",
     "Operating System :: MacOS",
 ]
-requires-python = ">=3.9"
-dependencies = ["numpy", "ase", "pandas", "soprano", "plotly", "PyQt5", "PyQtWebEngine"]
+requires-python = ">=3.10"
+dependencies = [
+    "numpy", "ase", "pandas", "soprano", "plotly", "PyQt5", "PyQtWebEngine",
+    "csdmpy",
+    "astropy",  # missing from csdmpy dependency declaration
+]
 
 [project.optional-dependencies]
 dev = ["codecov-cli>=0.4.1", "pytest>=7.4.0", "pytest-cov>=3.0.0", "ruff>=0.0.285"]
@@ -40,7 +42,7 @@ docs = [
     "mkdocs-gen-files>=0.5.0",
     "mkdocs-literate-nav>=0.6.0",
     "pillow>=10.0.0",
-    "cairosvg>=2.7.1"
+    "cairosvg>=2.7.1",
 ]
 
 [project.urls]

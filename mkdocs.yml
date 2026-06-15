@@ -7,14 +7,16 @@ nav:
   - Installation:
       - installation/install.md
   - User Guide:
-      - Prepare Simpson simulations: user_guide/write_simpson.ipynb
-      - Read Simpson files: user_guide/read_files.ipynb
+      - Reading SIMPSON files: user_guide/01_reading_files.ipynb
+      - A Simpson python calculator: user_guide/02_simulation_calculator.ipynb
+      - From DFT to SIMPSON: user_guide/03_dft_to_simpson.ipynb
   - Code Documentation: reference/
   - About:
       - about/contributors.md
       - about/changelog.md
       - about/license.md
 
+site_url: https://nuts-org.github.io/simpyson/
 repo_url: https://github.com/nuts-org/simpyson/
 edit_uri: blob/main/docs/
 
@@ -81,9 +83,6 @@ plugins:
   - search:
       separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
   - mknotebooks:
-      input_dir: notebooks
-      output_dir: docs/notebooks
-      exclude: ['.*_checkpoint.ipynb']
   - autorefs
   - social
   - offline

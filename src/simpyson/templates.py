@@ -1,170 +1,273 @@
-class SimpSim:
+from __future__ import annotations
+
+import re
+from abc import ABC, abstractmethod
+from typing import Any
+
+
+class PulseSequenceTemplate(ABC):
+    """Base class for pulse sequence templates"""
+
+    def __init__(self, **kwargs):
+        """
+        Initialize pulse sequence template.
+
+        Args:
+            **kwargs: Parameters to override defaults (without variable_ prefix)
+        """
+
+        self.parameters = self.get_default_parameters()
+
+        prefixed_params = {}
+        for key, value in kwargs.items():
+            prefixed_key = f"variable_{key}" if not key.startswith('variable_') else key
+            prefixed_params[prefixed_key] = value
+
+        self.parameters.update(prefixed_params)
+
+        # Validate parameters
+        self.validate_parameters()
+
+    @abstractmethod
+    def get_default_parameters(self) -> dict[str, Any]:
+        """Return default parameters for this pulse sequence (with variable_ prefix)"""
+
+    @abstractmethod
+    def get_required_parameters(self) -> set[str]:
+        """Return set of required parameter names (with variable_ prefix)"""
+
+    def validate_parameters(self):
+        """Validate that all required parameters are present"""
+        missing = self.get_required_parameters() - set(self.parameters.keys())
+        if missing:
+            missing_clean = {param.replace('variable_', '') for param in missing}
+            raise ValueError(f"Missing required parameters: {', '.join(missing_clean)}")
+
+    def update_parameters(self, **kwargs):
+        """
+        Update parameters and re-validate.
+
+        Args:
+            **kwargs: Parameters to update (without variable_ prefix)
+        """
+
+        prefixed_params = {}
+        for key, value in kwargs.items():
+            prefixed_key = f"variable_{key}" if not key.startswith('variable_') else key
+            prefixed_params[prefixed_key] = value
+
+        self.parameters.update(prefixed_params)
+        self.validate_parameters()
+
+class NoPulse(PulseSequenceTemplate):
     """
-    Class to create a SIMPSON simulation input.
+    No pulse sequence - direct acquisition.
 
-    Attributes:
-        spinsys (str): Spin system from Soprano or a custom string.
-        out_name (str): Output file name.
-        out_format (str): Output format (fid, spe, xreim).
-        spin_rate (float): Spin rate in Hz.
-        np (int): Number of points.
-        proton_freq (float): Proton frequency in Hz.
-        start_op (str): Start operator.
-        detect_op (str): Detect operator.
-        crystal_file (str): Crystal file.
-        gamma_angles (str): Gamma angles.
-        sw (float): Spectral width.
-        verbose (bool): Verbose output.
-        lb (float): Line broadening.
-        zerofill (int): Zero filling.
-        method (str): Method of simulation (direct, indirect, ...).
-        tsw (str, optional): Spectral width in time domain.
-        pulse_sequence (str, optional): Pulse sequence from templates or a custom string.
-        pH (float, optional): pulse for H in us.
-        pX (float, optional): pulse for X in us.
-        pY (float, optional): pulse for Y in us.
-        plH (float, optional): power level for H in Hz.
-        plX (float, optional): power level for X in Hz.
-        plY (float, optional): power level for Y in Hz.
-        phH (float, optional): phase for H pH.
-        phX (float, optional): phase for X pH.
-        phY (float, optional): phase for Y pH.
-
-    Example:
-        sim = SimpSim(spinsys=spinsys, out_name='output', out_format='spe', spin_rate=15e3, np=2048, proton_freq=400e6, start_op='Inx', detect_op='Inp', crystal_file='rep100', gamma_angles=4, sw=20e3, verbose=0, lb=20, zerofill=4096)
+    Parameters:
+        tsw (float): Dwell time in microseconds. Default: '1e6/sw'
     """
-    def __init__(self, spinsys, out_name, out_format, spin_rate, np, proton_freq, start_op, detect_op, crystal_file, gamma_angles, sw, verbose, lb, zerofill, method="direct", tsw=None, pulse_sequence=None, pH=None, pX=None, pY=None, plH=None, plX=None, plY=None, phH=None, phX=None, phY=None):
-        self.spin_rate = spin_rate
-        self.spinsys = spinsys
-        self.out_name = out_name
-        self.out_format = out_format
-        self.np = np
-        self.proton_freq = proton_freq
-        self.start_op = start_op
-        self.detect_op = detect_op
-        self.crystal_file = crystal_file
-        self.gamma_angles = gamma_angles
-        self.sw = sw
-        self.verbose = verbose
-        self.tsw = tsw if tsw else f"1e6/{sw}"
-        self.lb = lb
-        self.zerofill = zerofill
-        self.method = method
-        self.pulse_sequence = pulse_sequence
-        self.pH = pH
-        self.pX = pX
-        self.pY = pY
-        self.plH = plH
-        self.plX = plX
-        self.plY = plY
-        self.phH = phH
-        self.phX = phX
-        self.phY = phY
 
-    def par_content(self):
-        par_block = f"""
-par {{
-    spin_rate        {self.spin_rate}
-    np               {self.np}
-    proton_frequency {self.proton_freq}
-    start_operator   {self.start_op}
-    detect_operator  {self.detect_op}
-    method           {self.method}
-    crystal_file     {self.crystal_file}
-    gamma_angles     {self.gamma_angles}
-    variable sw      {self.sw}
-    verbose          {self.verbose}
-    variable tsw     {self.tsw}
-"""
-        if self.pH is not None:
-            if self.plH is None or self.phH is None:
-                raise ValueError("plH and phH must be defined if pH is defined")
-            par_block += f"    pH               {self.pH}\n"
-            par_block += f"    plH              {self.plH}\n"
-            par_block += f"    phH              {self.phH}\n"
+    def get_default_parameters(self) -> dict[str, Any]:
+        return {
+            'variable_tsw': '1e6/sw',
+            'variable_offset': 0.0,
+            'variable_num_channels': 1,
+        }
 
-        if self.pX is not None:
-            if self.plX is None or self.phX is None:
-                raise ValueError("plX and phX must be defined if pX is defined")
-            par_block += f"    pX               {self.pX}\n"
-            par_block += f"    plX              {self.plX}\n"
-            par_block += f"    phX              {self.phX}\n"
+    def get_required_parameters(self) -> set[str]:
+        return {'variable_tsw'}
 
-        if self.pY is not None:
-            if self.plY is None or self.phY is None:
-                raise ValueError("plY and phY must be defined if pY is defined")
-            par_block += f"    pY               {self.pY}\n"
-            par_block += f"    plY              {self.plY}\n"
-            par_block += f"    phY              {self.phY}\n"
+    @property
+    def description(self) -> str:
+        return "No pulse, direct acquisition"
 
-        par_block += "}\n"
-        return par_block
-
-    def pulseq_content(self):
-        if self.pulse_sequence:
-            return self.pulse_sequence
+    def generate_code(self) -> str:
+        offset_val = self.parameters.get('variable_offset', 0.0)
+        n_chan = int(self.parameters.get('variable_num_channels', 1))
+        if offset_val == 0:
+            offset_line = ""
+        elif n_chan <= 1:
+            offset_line = "    offset $par(offset)\n"
         else:
-            return no_pulse
-
-    def main_content(self):
-        if self.out_format == "fid":
-            return f"""
-proc main {{}} {{
+            extra = " 0" * (n_chan - 1)
+            offset_line = f"    offset $par(offset){extra}\n"
+        return f"""
+proc pulseq {{}} {{
     global par
-    set f [fsimpson]
-    faddlb $f {self.lb} 0
-    fzerofill $f {self.zerofill}
-    fsave $f {self.out_name}.fid
+{offset_line}    acq_block {{
+        delay $par(tsw)
+    }}
 }}
 """
-        elif self.out_format == "spe":
-            return f"""
-proc main {{}} {{
+
+class Pulse90(PulseSequenceTemplate):
+    """
+    Single 90° pulse on 1H.
+
+    On multi-channel spin systems, SIMPSON's ``pulse`` command requires an
+    rf/phase pair per channel; extra channels are padded with ``0 0``.
+
+    Parameters:
+        pH (float): Pulse length in microseconds. Default: 5.0
+        plH (float): Pulse power in Hz. Default: 50000
+        phH (str): Pulse phase. Default: '90'
+        tsw (float): Dwell time in microseconds. Default: '1e6/sw'
+    """
+
+    def get_default_parameters(self) -> dict[str, Any]:
+        return {
+            'variable_pH': 5.0,
+            'variable_plH': 50000,
+            'variable_phH': '90',
+            'variable_tsw': '1e6/sw',
+            'variable_num_channels': 1,
+        }
+
+    def get_required_parameters(self) -> set[str]:
+        return {'variable_pH', 'variable_plH', 'variable_phH', 'variable_tsw'}
+
+    @property
+    def description(self) -> str:
+        return "Single 90° pulse on 1H"
+
+    def generate_code(self) -> str:
+        # SIMPSON requires one "rf phase" pair per channel on the pulse line
+        n_chan = int(self.parameters.get('variable_num_channels', 1))
+        extra = " 0 0" * (n_chan - 1)
+        return f"""
+proc pulseq {{}} {{
     global par
-    set f [fsimpson]
-    faddlb $f {self.lb} 0
-    fzerofill $f {self.zerofill}
-    fft $f
-    fsave $f {self.out_name}.spe
+    pulse $par(pH) $par(plH) $par(phH){extra}
+    acq_block {{
+        delay $par(tsw)
+    }}
 }}
 """
-        elif self.out_format == "xreim":
-            return f"""
-proc main {{}} {{
-    global par
-    set f [fsimpson]
-    fsave $f {self.out_name}.xreim -xreim
-}}
-"""
-        else:
-            raise ValueError(f"Unknown out_format {self.out_format}")
 
-    def __str__(self):
-        return f"{self.spinsys}\n{self.par_content()}{self.pulseq_content()}{self.main_content()}"
-    
-    def save(self, filepath):
-        with open(filepath, 'w') as file:
-            file.write(str(self))
+class CPMAS(PulseSequenceTemplate):
+    """
+    Cross-polarization magic angle spinning sequence.
 
+    The initial 1H magnetization is set via ``start_operator`` (e.g. ``I1x``)
+    in the SIMPSON par block, so no explicit 90° pulse is needed here.
 
-# Predefined pulse sequences
-# No pulse sequence
-no_pulse = """
-proc pulseq {} {
-    global par
-    acq_block {
-    delay $par(tsw)
-    }
+    Note: ``sw`` does not need to be commensurate with
+    ``spin_rate * gamma_angles``; SIMPSON samples ``acq_block`` at ``1/sw``
+    independently of the block duration (verified empirically).
+
+    Parameters:
+        pcp (float): Contact pulse length in μs. Default: 1000
+        plHcp (float): 1H contact pulse power in Hz. Default: 70000
+        phHcp (str): 1H contact pulse phase. Default: '0'
+        plCcp (float): 13C contact pulse power in Hz. Default: 69000
+        phCcp (str): 13C contact pulse phase. Default: '0'
+        dw (str): Dwell time expression. Default: '1e6/spin_rate/gamma_angles'
+    """
+
+    def __init__(self, **kwargs):
+        # Populated by SimpCalc from the actual spinsys before generate_code() is called.
+        self.turnoff_interactions: list[str] = []
+        super().__init__(**kwargs)
+
+    def get_default_parameters(self) -> dict[str, Any]:
+        return {
+            'variable_pcp': 1000,
+            'variable_plHcp': 70000,
+            'variable_phHcp': '0',
+            'variable_plCcp': 69000,
+            'variable_phCcp': '0',
+            'variable_dw': '1e6/spin_rate/gamma_angles'
+        }
+
+    def get_required_parameters(self) -> set[str]:
+        return {
+            'variable_pcp', 'variable_plHcp', 'variable_phHcp',
+            'variable_plCcp', 'variable_phCcp', 'variable_dw'
+        }
+
+    @property
+    def description(self) -> str:
+        return "Cross-polarization magic angle spinning"
+
+    def generate_code(self) -> str:
+        turnoff_line = (
+            f"    turnoff {' '.join(self.turnoff_interactions)}\n"
+            if self.turnoff_interactions else ""
+        )
+        return (
+            "\nproc pulseq {} {\n"
+            "    global par\n"
+            "    reset\n"
+            "    pulse $par(pcp) $par(plHcp) $par(phHcp) $par(plCcp) $par(phCcp)\n"
+            + turnoff_line
+            + "    acq_block {\n"
+            "        delay $par(dw)\n"
+            "    }\n"
+            "}\n"
+        )
+
+pulseq_templates = {
+    'no_pulse': NoPulse,
+    'pulse_90': Pulse90,
+    'cp_mas': CPMAS,
 }
-"""
 
-# 90 degree pulse
-pulse_90 = """
-proc pulseq {} {
+def get_template(name: str, **kwargs) -> PulseSequenceTemplate:
+    """
+    Get a pulse sequence template by name.
+
+    Args:
+        name: Template name ('no_pulse', 'pulse_90', 'cp_mas')
+        **kwargs: Parameters to override defaults
+
+    Returns:
+        PulseSequenceTemplate: Configured template instance
+    """
+    if name not in pulseq_templates:
+        available = ', '.join(pulseq_templates.keys())
+        raise ValueError(f"Unknown template '{name}'. Available: {available}")
+
+    return pulseq_templates[name](**kwargs)
+
+class CustomPulseSequence(PulseSequenceTemplate):
+    """Wrapper for custom string pulse sequences"""
+
+    def __init__(self, code: str, **kwargs):
+        self.code = code
+        # Filter kwargs to only include parameters that appear in the code
+
+        required = self.get_required_parameters()
+        filtered_kwargs = {}
+        for k, v in kwargs.items():
+            # Accept both already-prefixed keys and unprefixed keys
+            if k in required or f"variable_{k}" in required:
+                filtered_kwargs[k] = v
+
+        super().__init__(**filtered_kwargs)
+
+    def get_default_parameters(self) -> dict[str, Any]:
+        return {}
+
+    def get_required_parameters(self) -> set[str]:
+        # Extract parameter names from the code using regex
+        params = set()
+        pattern = r'\$par\(([^)]+)\)'
+        matches = re.findall(pattern, self.code)
+        for match in matches:
+            params.add(f"variable_{match}")
+        return params
+
+    @property
+    def description(self) -> str:
+        return "Custom pulse sequence"
+
+    def generate_code(self) -> str:
+        if self.code.strip().startswith("proc pulseq"):
+            return self.code
+
+        return f"""
+proc pulseq {{}} {{
     global par
-    acq_block {
-    pulse $par(pH) $par(plH) $par(phH)  
-    delay $par(tsw)
-    }
-}
+{self.code}
+}}
 """

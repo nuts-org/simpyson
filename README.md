@@ -1,25 +1,64 @@
 # SimPYson: A Pythonic Interface for SIMPSON
 
 [![DOI](https://zenodo.org/badge/813117518.svg)](https://doi.org/10.5281/zenodo.14041918)
+![Python - Version](https://img.shields.io/pypi/pyversions/simpyson)
+![PyPI - Version](https://img.shields.io/pypi/v/simpyson?color=blue)
 
-SimPYson is a Python package designed to simplify the use of [SIMPSON](https://inano.au.dk/about/research-centers-and-projects/nmr/software/simpson), a powerful code to simulate solid-state NMR experiments. Born out of the need to streamline the process, SimPYson makes it easier to prepare input files from DFT calculations and analyze results from SIMPSON simulations all within a Python.
+SimPYson is a Python package that makes it easier to work with [SIMPSON](https://inano.au.dk/about/research-centers-and-projects/nmr/software/simpson), a code for simulating solid-state NMR experiments. It handles preparing input files from DFT calculations, running simulations, and reading results — all from Python.
 
-## Features 🤌
+## Features
 
-- **Convert DFT data to SIMPSON input files**: Prepare SIMPSON input files from DFT data (CASTEP, Quantum Espresso, VASP).
+- **Run SIMPSON simulations from Python**: Use `simulate_spectrum()` for smart defaults or `SimpCalc` for full control over spin systems, pulse sequences, and output.
+- **Convert DFT data to SIMPSON input files**: Prepare spin systems from CASTEP, Quantum Espresso, and VASP calculations via ASE and Soprano.
+- **Read SIMPSON output files**: Load `.spe`, `.fid`, `.xreim`, and `.csdf` files into a unified `Simpy` object with automatic FID↔spectrum conversion and ppm scaling.
+- **Pulse sequence templates**: Built-in templates for no-pulse, 90° pulse, and CPMAS experiments. Custom Tcl sequences are also supported.
+- **Graphical User Interface**: Launch with `simpyson gui` to inspect and process spectra without any coding.
 
-- **Read SIMPSON output files**: Load and manipulate NMR data from SIMPSON `.spe`, `.fid`, and `.xreim` files directly in Python for further analysis and visualization.
+## Quick Start
 
-- **Graphical User Interface**: You can type `simpyson gui` in your terminal to get Simpyson graphical user interface, and manipulate the data without any coding required.
+**Read a SIMPSON output file:**
 
-- **Templates for common experiments**: Use ready-made templates for typical Simpson NMR simulations, currently 90-degree pulse and no-pulse. More soon.
+```python
+from simpyson import read_simp
 
-## Documentation 📖
+data = read_simp("ethanol.spe", b0="400MHz", nucleus="1H")
+print(data.ppm['ppm'])   # ppm axis, auto-calculated
+print(data.spe['hz'])    # Hz axis
+```
 
-To learn more about simpyson, including some tutorials check the [documentation](https://nuts-org.github.io/simpyson/).
+Accessing `.fid` on a spectrum file (or `.spe` on a FID) triggers automatic conversion via FFT — no manual processing needed.
 
-# Planned Features 🔜
+**Simulate a spectrum directly from Python:**
 
-- **Expand number of pulse sequences**: Additional templates for more complex NMR experiments.
+```python
+from simpyson import simulate_spectrum
 
-- **Expand number of DFT codes**: Improve the support of other DFT codes, suggestions are welcomed.
+spinsys = """
+channels 13C
+nuclei 13C 13C
+shift 1 10p 0 0 0 0 0
+shift 2 50p 0 0 0 0 0
+"""
+
+result = simulate_spectrum(spinsys, proton_frequency=400e6, spin_rate=10000)
+print(result.ppm['ppm'])
+```
+
+`simulate_spectrum()` automatically estimates the spectral width and carrier offset from the chemical shifts. For full control over all parameters, use `SimpCalc` directly — see the [documentation](https://nuts-org.github.io/simpyson/).
+
+## Installation
+
+```bash
+pip install git+https://github.com/nuts-org/simpyson.git
+```
+
+Requires Python ≥ 3.10 and a working [SIMPSON](https://inano.au.dk/about/research-centers-and-projects/nmr/software/simpson) installation for running simulations.
+
+## Documentation
+
+Full documentation and tutorials are available at [nuts-org.github.io/simpyson](https://nuts-org.github.io/simpyson/).
+
+## Planned Features
+
+- Additional pulse sequence templates for more complex NMR experiments.
+- Broader support for DFT codes — suggestions welcome.

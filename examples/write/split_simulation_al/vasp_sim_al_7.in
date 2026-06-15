@@ -3,34 +3,37 @@ spinsys {
 channels 27Al
 nuclei 27Al
 
-shift 1 27.003783966807987p -15.793382124481582p 0.7840665519505524 77.40688677154138 44.596231250968955 84.63192023428246
+shift 1 27.28377552964639p -15.793382124481582p 0.7840665519505524 77.40688677154138 44.596231250968955 84.63192023428246
 
-quadrupole 1 2 3402907.6864150735 0.9839516192937835 235.72036638710676 133.16907267064025 -0.9432217250969338
+quadrupole 1 2 3402907.686415075 0.9839516192937839 235.72036638710676 133.16907267064025 -0.9432217250969084
 
 
 }
-
 
 par {
-    spin_rate        40000.0
-    np               2048
-    proton_frequency 800000000.0
-    start_operator   Inx
-    detect_operator  Inc
-    method           direct
-    crystal_file     rep168
-    gamma_angles     6
-    variable sw      20000.0
-    verbose          01
-    variable tsw     20000.0
+   crystal_file         rep168
+   detect_operator      Inc
+   gamma_angles         6
+   method               direct
+   np                   2048
+   proton_frequency     800000000.0
+   spin_rate            40000.0
+   start_operator       Inx
+   sw                   20000.0
+   verbose              0
+   variable offset          0.0
+   variable tsw             20000.0
 }
+
 
 proc pulseq {} {
     global par
+    offset $par(offset)
     acq_block {
-    delay $par(tsw)
+        delay $par(tsw)
     }
 }
+
 
 proc main {} {
     global par

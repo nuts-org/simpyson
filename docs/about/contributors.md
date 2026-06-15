@@ -1,6 +1,6 @@
 # People
 
-SimPYson was originally developed by [Carlos Bornes](https://physchem.cz/people/carlos-bornes/).
+SimPYson is currently maintained by Carlos, Márcio and Daniel as part of NUTS.
 
 ## Active Maintainers
 

@@ -1,147 +1,218 @@
+from __future__ import annotations
+
+from pathlib import Path
+
 import ase.io
 import numpy as np
 import scipy.constants as const
-import os
-import json
 
 from simpyson.utils import get_larmor_freq
 
-def read_vasp(file, format):
+
+def _find_line(lines: list[str], marker: str) -> int:
+    """Return the index of the last line containing *marker*, or raise."""
+    idx = None
+    for i, line in enumerate(lines):
+        if marker in line:
+            idx = i
+    if idx is None:
+        raise ValueError(
+            f"Expected OUTCAR section '{marker}' not found. "
+            "Is this a VASP NMR calculation OUTCAR?"
+        )
+    return idx
+
+
+def read_vasp(file: str, format: str) -> ase.Atoms:
     """
-    This function reads NMR data from a VASP OUTCAR file.
+    Read NMR data from a VASP OUTCAR file.
 
-    Args:
-        file (str): The path to the VASP OUTCAR file.
-        format (str): The format of the VASP OUTCAR file.
+    Parses electric field gradients (EFG) and magnetic shielding tensors from
+    a VASP NMR calculation and attaches them to an ASE Atoms object as arrays
+    named ``'efg'`` and ``'ms'``.
 
-    Returns:
-        ase.Atoms: The Atoms object with the NMR data.
+    Parameters
+    ----------
+    file : str
+        Path to the VASP OUTCAR file.
+    format : str
+        ASE format string for reading the structure (e.g., ``'vasp-out'``).
 
-    Example:
-        reader = read_vasp('OUTCAR', 'vasp-out')
+    Returns
+    -------
+    ase.Atoms
+        Atoms object with ``'efg'`` and ``'ms'`` arrays attached.
+
+    Raises
+    ------
+    ValueError
+        If the OUTCAR is missing expected NMR sections.
+
+    Examples
+    --------
+    >>> atoms = read_vasp('OUTCAR', 'vasp-out')
+    >>> atoms.get_array('ms')  # magnetic shielding tensors
     """
-    filename = ase.io.read(file, format=format)
-    n_atoms = filename.get_global_number_of_atoms()
+    atoms = ase.io.read(file, format=format)
+    n_atoms = atoms.get_global_number_of_atoms()
     np.set_printoptions(suppress=True)
-    efg = []
-    sym_tensor = []
-    const_shield = []
-    core_shield_dict = []
-    ms = []
-    volume = None
-    with open(file, 'r') as outcar:
+
+    with Path(file).open() as outcar:
         lines = outcar.readlines()
-        #Find lines with specific header
-        for line in lines:
-            if line.find("Electric field gradients (V/A^2)") != -1:
-                idx_header1 = lines.index(line) #efg
-            if line.find("SYMMETRIZED TENSORS") != -1:
-                idx_header2 = []
-                idx_header2.append(lines.index(line)) #sym tensor - need to take second one (unsym. tensors)
-            if line.find("G=0 CONTRIBUTION TO CHEMICAL SHIFT") != -1:
-                idx_header3 = lines.index(line) #constant shielding
-            if line.find('Core NMR properties') != -1:
-                idx_header4 = lines.index(line) #core NMR prop - depends on atom type
-            if line.find("Core contribution to magnetic susceptibility:") != -1:
-                val = line.split()[5]
-                exp = line.split()[6][-2:]
-                mag_sus = float(val)*10**int(exp)
-            if line.find("volume of cell") != -1 and volume is None:
-                volume = float(line.split()[4])
 
-        chi_fact = 3.0/8.0/np.pi*volume*6.022142e23/1e24 # Conversion factor for magnetic susceptibility
-        
-        #Calculate tensors for every atoms
-        for i in range(n_atoms):
-            grad = (lines[idx_header1+4+i]).split()[1:] # V_xx, V_yy, V_zz, V_xy, V_xz, V_yz
-            matrix = np.array([[grad[0],grad[3],grad[4]],   #xx xy xz
-                               [grad[3],grad[1],grad[5]],   #xy yy yz
-                               [grad[4],grad[5],grad[2]]])  #xz yz zz
-            efg.append(matrix)
+    # Locate required OUTCAR sections
+    idx_efg = _find_line(lines, "Electric field gradients (V/A^2)")
+    idx_sym = _find_line(lines, "SYMMETRIZED TENSORS")
+    idx_g0 = _find_line(lines, "G=0 CONTRIBUTION TO CHEMICAL SHIFT")
+    idx_core = _find_line(lines, "Core NMR properties")
 
-        for i in range(n_atoms*4):
-            if i % 4 != 0:
-                sym=lines[idx_header2[-1] + i + 1].split()
-                sym_tensor.append(lines[idx_header2[-1] + i + 1].split())
+    # Magnetic susceptibility
+    idx_sus = _find_line(lines, "Core contribution to magnetic susceptibility:")
+    sus_parts = lines[idx_sus].split()
+    mag_sus = float(sus_parts[5]) * 10 ** int(sus_parts[6][-2:])
 
-        # Newer version of VASP 6.4.1
-        if lines[idx_header3 + 1].strip() == "using pGv susceptibility, excluding core contribution":
-            start_idx = idx_header3 + 5
-        # Older version of VASP
-        else:
-            start_idx = idx_header3 + 4
+    # Cell volume (first occurrence)
+    volume = None
+    for line in lines:
+        if "volume of cell" in line:
+            volume = float(line.split()[4])
+            break
+    if volume is None:
+        raise ValueError("Cell volume not found in OUTCAR.")
 
-        for i in range(3):
-            const_shield.append((lines[start_idx + i]).split()[1:])
+    # Avogadro-based conversion factor for magnetic susceptibility
+    chi_fact = 3.0 / 8.0 / np.pi * volume * 6.022142e23 / 1e24
 
-        for i in range(len(np.unique(filename.get_chemical_symbols()))):
-            core_shield_dict.append((lines[idx_header4 + 4 + i]).split()[1:])
-        core_shield_dict = dict((k[0], float(k[1:][0])) for k in core_shield_dict)
-        core_shield = []
+    # --- EFG tensors ---
+    efg = []
+    for i in range(n_atoms):
+        # EFG data starts 4 lines after the header: V_xx, V_yy, V_zz, V_xy, V_xz, V_yz
+        grad = lines[idx_efg + 4 + i].split()[1:]
+        matrix = np.array(
+            [
+                [grad[0], grad[3], grad[4]],  # xx xy xz
+                [grad[3], grad[1], grad[5]],  # xy yy yz
+                [grad[4], grad[5], grad[2]],  # xz yz zz
+            ]
+        )
+        efg.append(matrix)
 
-        for i in filename.get_chemical_symbols():
-            core_shield.append(core_shield_dict[i])
+    # --- Symmetrized shielding tensors (3 rows per atom, every 4th line is a separator) ---
+    sym_tensor = []
+    for i in range(n_atoms * 4):
+        if i % 4 != 0:
+            sym_tensor.append(lines[idx_sym + i + 1].split())
 
-    #Process results
-    efg = np.array(efg,dtype=float) #resulting EFG matrix
+    # --- G=0 constant shielding (3x3 tensor) ---
+    # VASP 6.4.1+ has an extra description line
+    if lines[idx_g0 + 1].strip() == "using pGv susceptibility, excluding core contribution":
+        start_idx = idx_g0 + 5
+    else:
+        start_idx = idx_g0 + 4
+
+    const_shield = []
+    for i in range(3):
+        const_shield.append(lines[start_idx + i].split()[1:])
+
+    # --- Core shielding per element type ---
+    unique_elements = np.unique(atoms.get_chemical_symbols())
+    core_shield_rows = []
+    for i in range(len(unique_elements)):
+        core_shield_rows.append(lines[idx_core + 4 + i].split()[1:])
+    core_shield_map = {row[0]: float(row[1]) for row in core_shield_rows}
+    core_shield = np.array([core_shield_map[el] for el in atoms.get_chemical_symbols()])
+
+    # --- Assemble results ---
+    efg = np.array(efg, dtype=float)
     efg = efg * 1e20 / const.physical_constants["atomic unit of electric field gradient"][0]
-    sym_tensor = np.split(np.array(sym_tensor,dtype=float), n_atoms) #symmetry tensors
-    const_shield = np.array(const_shield, dtype=float) #constant shielding of the lattice
-    core_shield = np.array(core_shield,dtype=float) #core shielding depending on atom type
-    
+    sym_tensor = np.split(np.array(sym_tensor, dtype=float), n_atoms)
+    const_shield = np.array(const_shield, dtype=float)
+
+    ms = []
     for i in range(n_atoms):
         core_diag = np.diag(core_shield[i] * np.ones(3))
-        ms_tensor = sym_tensor[i] + const_shield + core_diag + mag_sus/chi_fact*1e6*np.eye(3) #calculating MS tensor
-        ms.append(-ms_tensor)  # calculating MS tensors
-    ms=np.array(np.array(ms).tolist(),dtype=float) #processing MS tensor to work with ase
+        ms_tensor = (
+            sym_tensor[i]
+            + const_shield
+            + core_diag
+            + mag_sus / chi_fact * 1e6 * np.eye(3)
+        )
+        ms.append(-ms_tensor)
+    ms = np.array(np.array(ms).tolist(), dtype=float)
 
-    filename.set_array('efg', efg)
-    filename.set_array('ms', ms)
+    atoms.set_array('efg', efg)
+    atoms.set_array('ms', ms)
 
-    return filename
+    return atoms
 
-def hz2ppm(hz, b0, nucleus, isotope_file=None):
+
+def hz2ppm(
+    hz: np.ndarray | float,
+    b0: str,
+    nucleus: str,
+    isotope_file: str | None = None,
+) -> np.ndarray | float:
     """
-    Convert Hz values to ppm values.
-    
-    Args:
-        hz (numpy.ndarray): Frequency values in Hz
-        b0 (str): Magnetic field strength (e.g., '400MHz' or '9.4T')
-        nucleus (str): Nucleus type (e.g., '1H' or '13C')
-        isotope_file (str, optional): Path to isotope data file. If None, uses default.
-    
-    Returns:
-        numpy.ndarray: Chemical shift values in ppm
-        
-    Raises:
-        ValueError: If B0 unit is invalid or nucleus not found
-    """
-    
-    larmor_freq = get_larmor_freq(b0, nucleus, isotope_file)
+    Convert frequency values from Hz to ppm.
 
-    ppm = hz / np.abs(larmor_freq)
-    
-    return ppm
+    Parameters
+    ----------
+    hz : numpy.ndarray or float
+        Frequency values in Hz.
+    b0 : str
+        Magnetic field strength (e.g., ``'400MHz'`` or ``'9.4T'``).
+    nucleus : str
+        Nucleus type (e.g., ``'1H'``, ``'13C'``).
+    isotope_file : str or None
+        Path to isotope data JSON file. If None, uses the bundled default.
 
-def ppm2hz(ppm, b0, nucleus, isotope_file=None):
+    Returns
+    -------
+    numpy.ndarray or float
+        Chemical shift values in ppm.
+
+    Raises
+    ------
+    ValueError
+        If the B0 unit is invalid or the nucleus is not found.
     """
-    Convert ppm values to Hz values.
-    
-    Args:
-        ppm (numpy.ndarray): Chemical shift values in ppm
-        b0 (str): Magnetic field strength (e.g., '400MHz' or '9.4T')
-        nucleus (str): Nucleus type (e.g., '1H' or '13C')
-        isotope_file (str, optional): Path to isotope data file. If None, uses default.
-    
-    Returns:
-        numpy.ndarray: Frequency values in Hz
-        
-    Raises:
-        ValueError: If B0 unit is invalid or nucleus not found
+    # SIMPSON places +delta at +delta*|nu_L| regardless of the sign of gamma,
+    # so the axis conversion must use the Larmor frequency magnitude.
+    # Using the signed value mirrored every negative-gamma (29Si, 15N, ...) axis.
+    larmor_freq = abs(get_larmor_freq(b0, nucleus, isotope_file))
+    return hz / larmor_freq
+
+
+def ppm2hz(
+    ppm: np.ndarray | float,
+    b0: str,
+    nucleus: str,
+    isotope_file: str | None = None,
+) -> np.ndarray | float:
     """
-    
-    larmor_freq = get_larmor_freq(b0, nucleus, isotope_file)
-    
-    hz = ppm * np.abs(larmor_freq) 
-    
-    return hz
+    Convert chemical shift values from ppm to Hz.
+
+    Parameters
+    ----------
+    ppm : numpy.ndarray or float
+        Chemical shift values in ppm.
+    b0 : str
+        Magnetic field strength (e.g., ``'400MHz'`` or ``'9.4T'``).
+    nucleus : str
+        Nucleus type (e.g., ``'1H'``, ``'13C'``).
+    isotope_file : str or None
+        Path to isotope data JSON file. If None, uses the bundled default.
+
+    Returns
+    -------
+    numpy.ndarray or float
+        Frequency values in Hz.
+
+    Raises
+    ------
+    ValueError
+        If the B0 unit is invalid or the nucleus is not found.
+    """
+    # See hz2ppm: SIMPSON's frequency axis convention uses |nu_L|.
+    larmor_freq = abs(get_larmor_freq(b0, nucleus, isotope_file))
+    return ppm * larmor_freq
