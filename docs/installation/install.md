@@ -10,7 +10,7 @@
 If you have Python and pip installed, you can install SimPYson with:
 
 ```bash
-pip install git+https://github.com/nuts-org/simpyson.git
+pip install simpyson
 ```
 
 All dependencies are installed automatically.
