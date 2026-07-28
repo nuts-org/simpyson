@@ -12,7 +12,7 @@ The currently active maintainers are as follows:
 
 ## Contributors
 
-Additional contributions were made by the individuals listed [here](https://github.com/carlosbornes/simpyson/graphs/contributors).
+Additional contributions were made by the individuals listed [here](https://github.com/nuts-org/simpyson/graphs/contributors).
 
 
 ## Inspiration
