@@ -12,31 +12,31 @@
         <meta name="author" content="NUTS">
       
       
-        <link rel="canonical" href="https://nuts-org.github.io/simpyson/reference/simpyson/cli.html">
+        <link rel="canonical" href="https://nuts-org.github.io/simpyson/reference/public_api.html">
       
       
-        <link rel="prev" href="calculator.html">
+        <link rel="prev" href="../user_guide/03_simulation_calculator.html">
       
       
-        <link rel="next" href="converter.html">
+        <link rel="next" href="simpyson/calculator.html">
       
       
         
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
-        <title>cli - simpyson</title>
+        <title>Public API - simpyson</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -57,15 +57,15 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
     
-      <link rel="stylesheet" href="../../css/ansi-colours.css">
+      <link rel="stylesheet" href="../css/ansi-colours.css">
     
-      <link rel="stylesheet" href="../../css/jupyter-cells.css">
+      <link rel="stylesheet" href="../css/jupyter-cells.css">
     
-      <link rel="stylesheet" href="../../css/pandas-dataframe.css">
+      <link rel="stylesheet" href="../css/pandas-dataframe.css">
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -73,17 +73,17 @@
     
   
 <meta property="og:type" content="website" />
-<meta property="og:title" content="cli - simpyson" />
+<meta property="og:title" content="Public API - simpyson" />
 <meta property="og:description" content="SimPYson is a Pythonic interface for SIMPSON." />
-<meta property="og:image" content="https://nuts-org.github.io/simpyson/assets/images/social/reference/simpyson/cli.png" />
+<meta property="og:image" content="https://nuts-org.github.io/simpyson/assets/images/social/reference/public_api.png" />
 <meta property="og:image:type" content="image/png" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
-<meta property="og:url" content="https://nuts-org.github.io/simpyson/reference/simpyson/cli.html" />
+<meta property="og:url" content="https://nuts-org.github.io/simpyson/reference/public_api.html" />
 <meta property="twitter:card" content="summary_large_image" />
-<meta property="twitter:title" content="cli - simpyson" />
+<meta property="twitter:title" content="Public API - simpyson" />
 <meta property="twitter:description" content="SimPYson is a Pythonic interface for SIMPSON." />
-<meta property="twitter:image" content="https://nuts-org.github.io/simpyson/assets/images/social/reference/simpyson/cli.png" />
+<meta property="twitter:image" content="https://nuts-org.github.io/simpyson/assets/images/social/reference/public_api.png" />
 </head>
   
   
@@ -101,7 +101,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#simpyson.cli" class="md-skip">
+        <a href="#public-api" class="md-skip">
           Skip to content
         </a>
       
@@ -117,7 +117,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../../index.html" title="simpyson" class="md-header__button md-logo" aria-label="simpyson" data-md-component="logo">
+    <a href="../index.html" title="simpyson" class="md-header__button md-logo" aria-label="simpyson" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -137,7 +137,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              cli
+              Public API
             
           </span>
         </div>
@@ -234,7 +234,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../../index.html" title="simpyson" class="md-nav__button md-logo" aria-label="simpyson" data-md-component="logo">
+    <a href="../index.html" title="simpyson" class="md-nav__button md-logo" aria-label="simpyson" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -264,7 +264,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../index.html" class="md-nav__link">
+      <a href="../index.html" class="md-nav__link">
         
   
   
@@ -343,7 +343,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../installation/install.html" class="md-nav__link">
+      <a href="../installation/install.html" class="md-nav__link">
         
   
   
@@ -377,6 +377,33 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../quickstart.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quickstart
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
     
     
     
@@ -391,17 +418,17 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
         
           
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
             
   
   
   <span class="md-ellipsis">
     
   
-    User Guide
+    Guides
   
 
     
@@ -412,12 +439,12 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
   
-    User Guide
+    Guides
   
 
           </label>
@@ -430,14 +457,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../user_guide/01_reading_files.html" class="md-nav__link">
+      <a href="../user_guide/01_reading_files.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Reading SIMPSON files
+    Analyse SIMPSON output
   
 
     
@@ -458,14 +485,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../user_guide/02_simulation_calculator.html" class="md-nav__link">
+      <a href="../user_guide/02_dft_to_simpson.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    A Simpson python calculator
+    From DFT to NMR spectrum
   
 
     
@@ -486,14 +513,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../user_guide/03_dft_to_simpson.html" class="md-nav__link">
+      <a href="../user_guide/03_simulation_calculator.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    From DFT to SIMPSON
+    Custom simulations with SimpCalc
   
 
     
@@ -536,17 +563,17 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
         
           
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
             
   
   
   <span class="md-ellipsis">
     
   
-    Code Documentation
+    API reference
   
 
     
@@ -557,12 +584,12 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_4">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             
   
-    Code Documentation
+    API reference
   
 
           </label>
@@ -576,6 +603,112 @@
   
   
   
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Public API
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="public_api.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Public API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#pulse-sequences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pulse sequences
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#helpers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Helpers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#graphical-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Graphical interface
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     
     
     
@@ -583,14 +716,14 @@
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_1" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" >
         
           
-          <label class="md-nav__link" for="__nav_4_1" id="__nav_4_1_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
             
   
   
@@ -608,8 +741,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_1_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_4_1">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -626,7 +759,7 @@
   
   
     <li class="md-nav__item">
-      <a href="calculator.html" class="md-nav__link">
+      <a href="simpyson/calculator.html" class="md-nav__link">
         
   
   
@@ -651,103 +784,10 @@
                 
   
   
-    
-  
-  
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    cli
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="cli.html" class="md-nav__link md-nav__link--active">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    cli
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#simpyson.cli" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        cli
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#simpyson.cli.main" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        main
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
   
   
     <li class="md-nav__item">
-      <a href="converter.html" class="md-nav__link">
+      <a href="simpyson/converter.html" class="md-nav__link">
         
   
   
@@ -775,35 +815,7 @@
   
   
     <li class="md-nav__item">
-      <a href="gui.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    gui
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="io.html" class="md-nav__link">
+      <a href="simpyson/io.html" class="md-nav__link">
         
   
   
@@ -831,7 +843,7 @@
   
   
     <li class="md-nav__item">
-      <a href="simpy.html" class="md-nav__link">
+      <a href="simpyson/simpy.html" class="md-nav__link">
         
   
   
@@ -859,7 +871,7 @@
   
   
     <li class="md-nav__item">
-      <a href="templates.html" class="md-nav__link">
+      <a href="simpyson/templates.html" class="md-nav__link">
         
   
   
@@ -887,7 +899,7 @@
   
   
     <li class="md-nav__item">
-      <a href="utils.html" class="md-nav__link">
+      <a href="simpyson/utils.html" class="md-nav__link">
         
   
   
@@ -943,10 +955,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
             
   
   
@@ -964,8 +976,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_5">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -982,7 +994,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../about/contributors.html" class="md-nav__link">
+      <a href="../about/contributors.html" class="md-nav__link">
         
   
   
@@ -1010,7 +1022,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../about/changelog.html" class="md-nav__link">
+      <a href="../about/changelog.html" class="md-nav__link">
         
   
   
@@ -1038,7 +1050,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../about/license.html" class="md-nav__link">
+      <a href="../about/license.html" class="md-nav__link">
         
   
   
@@ -1083,6 +1095,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -1091,10 +1105,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#simpyson.cli" class="md-nav__link">
+  <a href="#pulse-sequences" class="md-nav__link">
     <span class="md-ellipsis">
       
-        cli
+        Pulse sequences
       
     </span>
   </a>
@@ -1102,10 +1116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#simpyson.cli.main" class="md-nav__link">
+  <a href="#helpers" class="md-nav__link">
     <span class="md-ellipsis">
       
-        main
+        Helpers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#graphical-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Graphical interface
       
     </span>
   </a>
@@ -1137,7 +1162,7 @@
   
   
     <li class="md-path__item">
-      <a href="../../index.html" class="md-path__link">
+      <a href="../index.html" class="md-path__link">
         
   <span class="md-ellipsis">
     Home
@@ -1154,37 +1179,11 @@
   
     
     
-      
-  
-  
-    
-    
       <li class="md-path__item">
-        <a href="calculator.html" class="md-path__link">
+        <a href="public_api.html" class="md-path__link">
           
   <span class="md-ellipsis">
-    Code Documentation
-  </span>
-
-        </a>
-      </li>
-    
-  
-
-    
-  
-
-      
-        
-  
-  
-    
-    
-      <li class="md-path__item">
-        <a href="calculator.html" class="md-path__link">
-          
-  <span class="md-ellipsis">
-    simpyson
+    API reference
   </span>
 
         </a>
@@ -1202,122 +1201,72 @@
                   
 
 
-  
-    <a href="https://github.com/nuts-org/simpyson/blob/main/src/simpyson/cli.py" title="Edit this page" class="md-content__button md-icon" rel="edit">
-      
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
-    </a>
-  
-  
 
-
-  <h1>cli</h1>
-
-<div class="doc doc-object doc-module">
-
-
-
-<a id="simpyson.cli"></a>
-    <div class="doc doc-contents first">
-
-
-
-
-
-
-
-
-
-
-<div class="doc doc-children">
-
-
-
-
-
-
-
-
-
-
-<div class="doc doc-object doc-function">
-
-
-<h2 id="simpyson.cli.main" class="doc doc-heading">
-            <span class="doc doc-object-name doc-function-name">main</span>
-
-
-<a href="#simpyson.cli.main" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">main</span><span class="p">()</span>
+<h1 id="public-api">Public API<a class="headerlink" href="#public-api" title="Permanent link">&para;</a></h1>
+<p>Everything you need for normal use is importable from the top-level package:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">simpyson</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimpCalc</span><span class="p">,</span> <span class="n">Simpy</span><span class="p">,</span> <span class="n">read_simp</span><span class="p">,</span> <span class="n">simulate_spectrum</span>
 </span></code></pre></div>
-
-    <div class="doc doc-contents ">
-
-        <p>Entry point for the <code>simpyson</code> command-line interface.</p>
-
-
-<details class="subcommands" open>
-  <summary>Subcommands</summary>
-  <p>gui
-    Launch the simpyson GUI. Optionally pass file paths to open on start.</p>
-</details>
-
-            <details class="mkdocstrings-source">
-              <summary>Source code in <code>simpyson/cli.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-8"> 8</a></span>
-<span class="normal"><a href="#__codelineno-0-9"> 9</a></span>
-<span class="normal"><a href="#__codelineno-0-10">10</a></span>
-<span class="normal"><a href="#__codelineno-0-11">11</a></span>
-<span class="normal"><a href="#__codelineno-0-12">12</a></span>
-<span class="normal"><a href="#__codelineno-0-13">13</a></span>
-<span class="normal"><a href="#__codelineno-0-14">14</a></span>
-<span class="normal"><a href="#__codelineno-0-15">15</a></span>
-<span class="normal"><a href="#__codelineno-0-16">16</a></span>
-<span class="normal"><a href="#__codelineno-0-17">17</a></span>
-<span class="normal"><a href="#__codelineno-0-18">18</a></span>
-<span class="normal"><a href="#__codelineno-0-19">19</a></span>
-<span class="normal"><a href="#__codelineno-0-20">20</a></span>
-<span class="normal"><a href="#__codelineno-0-21">21</a></span>
-<span class="normal"><a href="#__codelineno-0-22">22</a></span>
-<span class="normal"><a href="#__codelineno-0-23">23</a></span>
-<span class="normal"><a href="#__codelineno-0-24">24</a></span>
-<span class="normal"><a href="#__codelineno-0-25">25</a></span>
-<span class="normal"><a href="#__codelineno-0-26">26</a></span>
-<span class="normal"><a href="#__codelineno-0-27">27</a></span>
-<span class="normal"><a href="#__codelineno-0-28">28</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="sd">    Entry point for the ``simpyson`` command-line interface.</span>
-</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11"></a>
-</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="sd">    Subcommands</span>
-</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="sd">    -----------</span>
-</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="sd">    gui</span>
-</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="sd">        Launch the simpyson GUI. Optionally pass file paths to open on start.</span>
-</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17"></a>    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">prog</span><span class="o">=</span><span class="s2">&quot;simpyson&quot;</span><span class="p">)</span>
-</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18"></a>    <span class="n">subparsers</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_subparsers</span><span class="p">(</span><span class="n">dest</span><span class="o">=</span><span class="s2">&quot;command&quot;</span><span class="p">)</span>
-</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19"></a>
-</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20"></a>    <span class="n">parser_gui</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span><span class="s2">&quot;gui&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Launch the GUI&quot;</span><span class="p">)</span>
-</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21"></a>    <span class="n">parser_gui</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;files&#39;</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Optional file(s) to open.&#39;</span><span class="p">)</span>
-</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22"></a>    <span class="n">parser_gui</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="k">lambda</span> <span class="n">args</span><span class="p">:</span> <span class="n">gui_main</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">files</span><span class="p">))</span>
-</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23"></a>
-</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24"></a>    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
-</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25"></a>    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s2">&quot;func&quot;</span><span class="p">):</span>
-</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26"></a>        <span class="n">args</span><span class="o">.</span><span class="n">func</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
-</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27"></a>    <span class="k">else</span><span class="p">:</span>
-</span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28"></a>        <span class="n">parser</span><span class="o">.</span><span class="n">print_help</span><span class="p">()</span>
-</span></code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
-
-
-
-  </div>
-
-    </div>
-
-</div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>What it is</th>
+<th>Guide</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-function-name&quot;&gt;read_simp&lt;/span&gt;" href="simpyson/io.html#simpyson.io.read_simp"><code>read_simp</code></a></td>
+<td>Read a SIMPSON <code>.spe</code>, <code>.fid</code>, <code>.xreim</code> or <code>.csdf</code> file into a <code>Simpy</code> object.</td>
+<td><a href="../user_guide/01_reading_files.html">Analyse SIMPSON output</a></td>
+</tr>
+<tr>
+<td><a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;Simpy&lt;/span&gt;" href="simpyson/simpy.html#simpyson.simpy.Simpy"><code>Simpy</code></a></td>
+<td>Container for FID, spectrum (Hz) and spectrum (ppm), with conversion and export.</td>
+<td><a href="../user_guide/01_reading_files.html">Analyse SIMPSON output</a></td>
+</tr>
+<tr>
+<td><a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-function-name&quot;&gt;simulate_spectrum&lt;/span&gt;" href="simpyson/calculator.html#simpyson.calculator.simulate_spectrum"><code>simulate_spectrum</code></a></td>
+<td>Simulate a spectrum from a spin system with automatic settings. Needs SIMPSON.</td>
+<td><a href="../user_guide/02_dft_to_simpson.html">From DFT to NMR spectrum</a></td>
+</tr>
+<tr>
+<td><a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;SimpCalc&lt;/span&gt;" href="simpyson/calculator.html#simpyson.calculator.SimpCalc"><code>SimpCalc</code></a></td>
+<td>Build, save and run a SIMPSON input file. Needs SIMPSON to run.</td>
+<td><a href="../user_guide/03_simulation_calculator.html">Custom simulations with SimpCalc</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="pulse-sequences">Pulse sequences<a class="headerlink" href="#pulse-sequences" title="Permanent link">&para;</a></h2>
+<p>The pulse sequence templates are in <code>simpyson.templates</code> and are normally selected by name in <code>SimpCalc</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Class</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>'no_pulse'</code></td>
+<td><a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;NoPulse&lt;/span&gt;" href="simpyson/templates.html#simpyson.templates.NoPulse"><code>NoPulse</code></a></td>
+</tr>
+<tr>
+<td><code>'pulse_90'</code></td>
+<td><a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;Pulse90&lt;/span&gt;" href="simpyson/templates.html#simpyson.templates.Pulse90"><code>Pulse90</code></a></td>
+</tr>
+<tr>
+<td><code>'cp_mas'</code></td>
+<td><a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;CPMAS&lt;/span&gt;" href="simpyson/templates.html#simpyson.templates.CPMAS"><code>CPMAS</code></a></td>
+</tr>
+</tbody>
+</table>
+<p>Your own Tcl is wrapped by <a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;CustomPulseSequence&lt;/span&gt;" href="simpyson/templates.html#simpyson.templates.CustomPulseSequence"><code>CustomPulseSequence</code></a>; subclass <a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;PulseSequenceTemplate&lt;/span&gt;" href="simpyson/templates.html#simpyson.templates.PulseSequenceTemplate"><code>PulseSequenceTemplate</code></a> to write a reusable template.</p>
+<h2 id="helpers">Helpers<a class="headerlink" href="#helpers" title="Permanent link">&para;</a></h2>
+<p>Other modules contain helpers used in the guides: <a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-function-name&quot;&gt;read_vasp&lt;/span&gt;" href="simpyson/converter.html#simpyson.converter.read_vasp"><code>read_vasp</code></a> (VASP <code>OUTCAR</code> to ASE <code>Atoms</code>), <a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-function-name&quot;&gt;hz2ppm&lt;/span&gt;" href="simpyson/converter.html#simpyson.converter.hz2ppm"><code>hz2ppm</code></a> and <a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-function-name&quot;&gt;ppm2hz&lt;/span&gt;" href="simpyson/converter.html#simpyson.converter.ppm2hz"><code>ppm2hz</code></a>, and <a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-function-name&quot;&gt;add_spectra&lt;/span&gt;" href="simpyson/utils.html#simpyson.utils.add_spectra"><code>add_spectra</code></a>.</p>
+<h2 id="graphical-interface">Graphical interface<a class="headerlink" href="#graphical-interface" title="Permanent link">&para;</a></h2>
+<p>Simpyson provides a simple graphical user interface (GUI) for easy interaction with the software. Which is being tested, it can be
+accessed via the command line wiht <code>simpyson gui</code>. Currently it is not documented.</p>
 
 
 
@@ -1355,7 +1304,7 @@
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="calculator.html" class="md-footer__link md-footer__link--prev" aria-label="Previous: calculator">
+          <a href="../user_guide/03_simulation_calculator.html" class="md-footer__link md-footer__link--prev" aria-label="Previous: Custom simulations with SimpCalc">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -1365,20 +1314,20 @@
                 Previous
               </span>
               <div class="md-ellipsis">
-                calculator
+                Custom simulations with SimpCalc
               </div>
             </div>
           </a>
         
         
           
-          <a href="converter.html" class="md-footer__link md-footer__link--next" aria-label="Next: converter">
+          <a href="simpyson/calculator.html" class="md-footer__link md-footer__link--next" aria-label="Next: calculator">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                converter
+                calculator
               </div>
             </div>
             <div class="md-footer__button md-icon">
@@ -1415,10 +1364,14 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.action.edit", "content.code.copy", "content.code.select", "content.code.annotate", "content.tabs.link", "content.tooltips", "navigation.footer", "navigation.path", "navigation.tracking", "navigation.sections", "navigation.top", "search.highlight", "search.suggest", "search.share", "header.autohide", "toc.follow"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["content.action.edit", "content.code.copy", "content.code.select", "content.code.annotate", "content.tabs.link", "content.tooltips", "navigation.footer", "navigation.path", "navigation.tracking", "navigation.sections", "navigation.top", "search.highlight", "search.suggest", "search.share", "header.autohide", "toc.follow"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
       
     
   </body>
