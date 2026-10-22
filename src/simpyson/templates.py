@@ -20,7 +20,7 @@ class PulseSequenceTemplate(ABC):
 
         prefixed_params = {}
         for key, value in kwargs.items():
-            prefixed_key = f"variable_{key}" if not key.startswith('variable_') else key
+            prefixed_key = f"variable_{key}" if not key.startswith("variable_") else key
             prefixed_params[prefixed_key] = value
 
         self.parameters.update(prefixed_params)
@@ -40,7 +40,7 @@ class PulseSequenceTemplate(ABC):
         """Validate that all required parameters are present"""
         missing = self.get_required_parameters() - set(self.parameters.keys())
         if missing:
-            missing_clean = {param.replace('variable_', '') for param in missing}
+            missing_clean = {param.replace("variable_", "") for param in missing}
             raise ValueError(f"Missing required parameters: {', '.join(missing_clean)}")
 
     def update_parameters(self, **kwargs):
@@ -53,11 +53,12 @@ class PulseSequenceTemplate(ABC):
 
         prefixed_params = {}
         for key, value in kwargs.items():
-            prefixed_key = f"variable_{key}" if not key.startswith('variable_') else key
+            prefixed_key = f"variable_{key}" if not key.startswith("variable_") else key
             prefixed_params[prefixed_key] = value
 
         self.parameters.update(prefixed_params)
         self.validate_parameters()
+
 
 class NoPulse(PulseSequenceTemplate):
     """
@@ -69,21 +70,21 @@ class NoPulse(PulseSequenceTemplate):
 
     def get_default_parameters(self) -> dict[str, Any]:
         return {
-            'variable_tsw': '1e6/sw',
-            'variable_offset': 0.0,
-            'variable_num_channels': 1,
+            "variable_tsw": "1e6/sw",
+            "variable_offset": 0.0,
+            "variable_num_channels": 1,
         }
 
     def get_required_parameters(self) -> set[str]:
-        return {'variable_tsw'}
+        return {"variable_tsw"}
 
     @property
     def description(self) -> str:
         return "No pulse, direct acquisition"
 
     def generate_code(self) -> str:
-        offset_val = self.parameters.get('variable_offset', 0.0)
-        n_chan = int(self.parameters.get('variable_num_channels', 1))
+        offset_val = self.parameters.get("variable_offset", 0.0)
+        n_chan = int(self.parameters.get("variable_num_channels", 1))
         if offset_val == 0:
             offset_line = ""
         elif n_chan <= 1:
@@ -99,6 +100,7 @@ proc pulseq {{}} {{
     }}
 }}
 """
+
 
 class Pulse90(PulseSequenceTemplate):
     """
@@ -116,15 +118,15 @@ class Pulse90(PulseSequenceTemplate):
 
     def get_default_parameters(self) -> dict[str, Any]:
         return {
-            'variable_pH': 5.0,
-            'variable_plH': 50000,
-            'variable_phH': '90',
-            'variable_tsw': '1e6/sw',
-            'variable_num_channels': 1,
+            "variable_pH": 5.0,
+            "variable_plH": 50000,
+            "variable_phH": "90",
+            "variable_tsw": "1e6/sw",
+            "variable_num_channels": 1,
         }
 
     def get_required_parameters(self) -> set[str]:
-        return {'variable_pH', 'variable_plH', 'variable_phH', 'variable_tsw'}
+        return {"variable_pH", "variable_plH", "variable_phH", "variable_tsw"}
 
     @property
     def description(self) -> str:
@@ -132,7 +134,7 @@ class Pulse90(PulseSequenceTemplate):
 
     def generate_code(self) -> str:
         # SIMPSON requires one "rf phase" pair per channel on the pulse line
-        n_chan = int(self.parameters.get('variable_num_channels', 1))
+        n_chan = int(self.parameters.get("variable_num_channels", 1))
         extra = " 0 0" * (n_chan - 1)
         return f"""
 proc pulseq {{}} {{
@@ -143,6 +145,7 @@ proc pulseq {{}} {{
     }}
 }}
 """
+
 
 class CPMAS(PulseSequenceTemplate):
     """
@@ -171,18 +174,22 @@ class CPMAS(PulseSequenceTemplate):
 
     def get_default_parameters(self) -> dict[str, Any]:
         return {
-            'variable_pcp': 1000,
-            'variable_plHcp': 70000,
-            'variable_phHcp': '0',
-            'variable_plCcp': 69000,
-            'variable_phCcp': '0',
-            'variable_dw': '1e6/spin_rate/gamma_angles'
+            "variable_pcp": 1000,
+            "variable_plHcp": 70000,
+            "variable_phHcp": "0",
+            "variable_plCcp": 69000,
+            "variable_phCcp": "0",
+            "variable_dw": "1e6/spin_rate/gamma_angles",
         }
 
     def get_required_parameters(self) -> set[str]:
         return {
-            'variable_pcp', 'variable_plHcp', 'variable_phHcp',
-            'variable_plCcp', 'variable_phCcp', 'variable_dw'
+            "variable_pcp",
+            "variable_plHcp",
+            "variable_phHcp",
+            "variable_plCcp",
+            "variable_phCcp",
+            "variable_dw",
         }
 
     @property
@@ -192,7 +199,8 @@ class CPMAS(PulseSequenceTemplate):
     def generate_code(self) -> str:
         turnoff_line = (
             f"    turnoff {' '.join(self.turnoff_interactions)}\n"
-            if self.turnoff_interactions else ""
+            if self.turnoff_interactions
+            else ""
         )
         return (
             "\nproc pulseq {} {\n"
@@ -206,11 +214,13 @@ class CPMAS(PulseSequenceTemplate):
             "}\n"
         )
 
+
 pulseq_templates = {
-    'no_pulse': NoPulse,
-    'pulse_90': Pulse90,
-    'cp_mas': CPMAS,
+    "no_pulse": NoPulse,
+    "pulse_90": Pulse90,
+    "cp_mas": CPMAS,
 }
+
 
 def get_template(name: str, **kwargs) -> PulseSequenceTemplate:
     """
@@ -224,13 +234,45 @@ def get_template(name: str, **kwargs) -> PulseSequenceTemplate:
         PulseSequenceTemplate: Configured template instance
     """
     if name not in pulseq_templates:
-        available = ', '.join(pulseq_templates.keys())
+        available = ", ".join(pulseq_templates.keys())
         raise ValueError(f"Unknown template '{name}'. Available: {available}")
 
     return pulseq_templates[name](**kwargs)
 
+
 class CustomPulseSequence(PulseSequenceTemplate):
-    """Wrapper for custom string pulse sequences"""
+    """
+    Wrapper for a user-written SIMPSON Tcl pulse sequence.
+
+    Created automatically by ``SimpCalc`` when ``pulse_sequence`` is a string
+    that is not a template name.
+
+    Parameters
+    ----------
+    code : str
+        Tcl code of the pulse sequence. Either the body of ``pulseq`` (it is
+        wrapped in ``proc pulseq {} { global par ... }``), or a complete
+        ``proc pulseq`` definition (used as given, so helper procedures can
+        follow it). Values that should be adjustable are written as
+        ``$par(name)`` placeholders.
+    **kwargs
+        Values for the placeholders, with or without the ``variable_`` prefix.
+        Keywords that match no ``$par(name)`` in ``code`` are ignored.
+
+    Raises
+    ------
+    ValueError
+        If ``code`` contains a ``$par(name)`` placeholder for which no value
+        was given.
+
+    Examples
+    --------
+    >>> seq = CustomPulseSequence(
+    ...     "pulse $par(pw) $par(rf) 0\\nacq", pw=2.5, rf=100000, other=1
+    ... )
+    >>> seq.parameters
+    {'variable_pw': 2.5, 'variable_rf': 100000}
+    """
 
     def __init__(self, code: str, **kwargs):
         self.code = code
@@ -251,7 +293,7 @@ class CustomPulseSequence(PulseSequenceTemplate):
     def get_required_parameters(self) -> set[str]:
         # Extract parameter names from the code using regex
         params = set()
-        pattern = r'\$par\(([^)]+)\)'
+        pattern = r"\$par\(([^)]+)\)"
         matches = re.findall(pattern, self.code)
         for match in matches:
             params.add(f"variable_{match}")

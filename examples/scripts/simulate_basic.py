@@ -8,6 +8,8 @@ prints basic info about the result.
 NOTE: Requires a working SIMPSON installation in your PATH.
 """
 
+from __future__ import annotations
+
 from simpyson import simulate_spectrum
 
 # Define a simple spin system with two 13C sites

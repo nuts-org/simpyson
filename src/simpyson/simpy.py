@@ -53,11 +53,11 @@ class Simpy:
 
         data = []
         if self._fid_data is not None:
-            n, sw = int(self._fid_data['np']), self._fid_data['sw']
+            n, sw = int(self._fid_data["np"]), self._fid_data["sw"]
             data.append(f"fid(np={n}, sw={sw:.0f} Hz)")
         if self._spe_data is not None:
-            n, sw = int(self._spe_data['np']), self._spe_data['sw']
-            ppm_flag = " +ppm" if 'ppm' in self._spe_data else ""
+            n, sw = int(self._spe_data["np"]), self._spe_data["sw"]
+            ppm_flag = " +ppm" if "ppm" in self._spe_data else ""
             data.append(f"spe(np={n}, sw={sw:.0f} Hz{ppm_flag})")
         if self._xreim_data is not None:
             data.append(f"xreim(n={len(self._xreim_data['time'])})")
@@ -75,8 +75,8 @@ class Simpy:
     def b0(self, value: str | None) -> None:
         self._b0 = value
         # Invalidate cached ppm data when b0 changes
-        if self._spe_data and 'ppm' in self._spe_data:
-            del self._spe_data['ppm']
+        if self._spe_data and "ppm" in self._spe_data:
+            del self._spe_data["ppm"]
 
     @property
     def nucleus(self) -> str | None:
@@ -87,8 +87,8 @@ class Simpy:
     def nucleus(self, value: str | None) -> None:
         self._nucleus = value
         # Invalidate cached ppm data if nucleus changes
-        if self._spe_data and 'ppm' in self._spe_data:
-            del self._spe_data['ppm']
+        if self._spe_data and "ppm" in self._spe_data:
+            del self._spe_data["ppm"]
 
     @property
     def fid(self) -> dict | None:
@@ -131,14 +131,14 @@ class Simpy:
             Dictionary with keys ``'ppm'``, ``'real'``, ``'imag'``, or None
             if conversion is not possible.
         """
-        if self.spe and 'ppm' not in self.spe and self._b0 and self._nucleus:
+        if self.spe and "ppm" not in self.spe and self._b0 and self._nucleus:
             self._compute_ppm()
 
-        if self.spe and 'ppm' in self.spe:
+        if self.spe and "ppm" in self.spe:
             return {
-                'ppm': self.spe['ppm'],
-                'real': self.spe['real'],
-                'imag': self.spe['imag']
+                "ppm": self.spe["ppm"],
+                "real": self.spe["real"],
+                "imag": self.spe["imag"],
             }
         return None
 
@@ -158,17 +158,17 @@ class Simpy:
         if not self._fid_data:
             return
 
-        npoints = self._fid_data['np']
-        sw = self._fid_data['sw']
-        signal = self._fid_data['real'] + 1j * self._fid_data['imag']
+        npoints = self._fid_data["np"]
+        sw = self._fid_data["sw"]
+        signal = self._fid_data["real"] + 1j * self._fid_data["imag"]
         spectrum = np.fft.fftshift(np.fft.fft(signal))
 
         self._spe_data = {
-            'real': np.real(spectrum),
-            'imag': np.imag(spectrum),
-            'np': npoints,
-            'sw': sw,
-            'hz': sw * (np.arange(int(npoints)) / int(npoints) - 0.5)
+            "real": np.real(spectrum),
+            "imag": np.imag(spectrum),
+            "np": npoints,
+            "sw": sw,
+            "hz": sw * (np.arange(int(npoints)) / int(npoints) - 0.5),
         }
 
     def _compute_fid(self) -> None:
@@ -176,30 +176,32 @@ class Simpy:
         if not self._spe_data:
             return
 
-        npoints = self._spe_data['np']
-        sw = self._spe_data['sw']
-        signal = self._spe_data['real'] + 1j * self._spe_data['imag']
+        npoints = self._spe_data["np"]
+        sw = self._spe_data["sw"]
+        signal = self._spe_data["real"] + 1j * self._spe_data["imag"]
         time_signal = np.fft.ifft(np.fft.ifftshift(signal))
         dt = 1.0 / sw
 
         self._fid_data = {
-            'real': np.real(time_signal),
-            'imag': np.imag(time_signal),
-            'np': npoints,
-            'sw': sw,
-            'time': np.arange(int(npoints)) * dt * 1e3 # seconds to milliseconds
+            "real": np.real(time_signal),
+            "imag": np.imag(time_signal),
+            "np": npoints,
+            "sw": sw,
+            "time": np.arange(int(npoints)) * dt * 1e3,  # seconds to milliseconds
         }
 
     def _compute_ppm(self) -> None:
         """Calculate ppm scale from Hz using b0 and nucleus."""
-        if not (self._spe_data and 'hz' in self._spe_data):
+        if not (self._spe_data and "hz" in self._spe_data):
             return
 
         if not (self._b0 and self._nucleus):
             return
 
         try:
-            self._spe_data['ppm'] = hz2ppm(self._spe_data['hz'], self._b0, self._nucleus)
+            self._spe_data["ppm"] = hz2ppm(
+                self._spe_data["hz"], self._b0, self._nucleus
+            )
         except ValueError as e:
             warnings.warn(f"Could not convert to ppm: {e}", stacklevel=2)
 
@@ -238,11 +240,11 @@ class Simpy:
             time = np.arange(int(np_value)) * dt * 1e3  # seconds to milliseconds
 
         self._fid_data = {
-            'real': np.array(real),
-            'imag': np.array(imag),
-            'np': np_value,
-            'sw': sw,
-            'time': np.array(time)
+            "real": np.array(real),
+            "imag": np.array(imag),
+            "np": np_value,
+            "sw": sw,
+            "time": np.array(time),
         }
 
         # Clear cached spectrum and xreim data
@@ -284,11 +286,11 @@ class Simpy:
             hz = sw * (np.arange(int(np_value)) / int(np_value) - 0.5)
 
         self._spe_data = {
-            'real': np.array(real),
-            'imag': np.array(imag),
-            'np': np_value,
-            'sw': sw,
-            'hz': np.array(hz)
+            "real": np.array(real),
+            "imag": np.array(imag),
+            "np": np_value,
+            "sw": sw,
+            "hz": np.array(hz),
         }
 
         # Calculate ppm if possible
@@ -324,9 +326,9 @@ class Simpy:
             Self, for method chaining.
         """
         self._xreim_data = {
-            'time': np.array(time),
-            'real': np.array(real),
-            'imag': np.array(imag)
+            "time": np.array(time),
+            "real": np.array(real),
+            "imag": np.array(imag),
         }
 
         # Clear cached FID and spectrum data
@@ -364,11 +366,11 @@ class Simpy:
             Self, for method chaining.
         """
         self._spe_data = {
-            'real': np.array(real),
-            'imag': np.array(imag),
-            'np': np_value,
-            'sw': sw,
-            'hz': np.array(hz)
+            "real": np.array(real),
+            "imag": np.array(imag),
+            "np": np_value,
+            "sw": sw,
+            "hz": np.array(hz),
         }
 
         if self._b0 and self._nucleus:
@@ -401,7 +403,7 @@ class Simpy:
 
         return new_obj
 
-    def write(self, filename: str, format: str = 'csv') -> Simpy:
+    def write(self, filename: str, format: str = "csv") -> Simpy:
         """
         Write data to file in the specified format.
 
@@ -424,19 +426,19 @@ class Simpy:
             If the format is unsupported or no data is available.
         """
         # CSV format
-        if format == 'csv':
+        if format == "csv":
             if self.spe:
-                if 'ppm' in self.spe and self._b0 and self._nucleus:
-                    x_data, x_label = self.spe['ppm'], 'ppm'
+                if "ppm" in self.spe and self._b0 and self._nucleus:
+                    x_data, x_label = self.spe["ppm"], "ppm"
                 else:
-                    x_data, x_label = self.spe['hz'], 'Hz'
-                y_data = self.spe['real']
+                    x_data, x_label = self.spe["hz"], "Hz"
+                y_data = self.spe["real"]
             elif self.fid:
-                x_data, x_label = self.fid['time'], 'Time (ms)'
-                y_data = self.fid['real']
+                x_data, x_label = self.fid["time"], "Time (ms)"
+                y_data = self.fid["real"]
             elif self.xreim:
-                x_data, x_label = self.xreim['time'], 'Time (ms)'
-                y_data = self.xreim['real']
+                x_data, x_label = self.xreim["time"], "Time (ms)"
+                y_data = self.xreim["real"]
             else:
                 raise ValueError("No data to save")
 
@@ -445,13 +447,13 @@ class Simpy:
                 np.column_stack((x_data, y_data)),
                 delimiter=",",
                 header=f"{x_label},Real",
-                comments=""
+                comments="",
             )
             return self
 
         # xreim: plain 3-column "time real imag" text, matching what
         # SIMPSON's `fsave -xreim` produces (and what read_xreim expects).
-        if format == 'xreim':
+        if format == "xreim":
             data_dict = self.xreim
             if data_dict is None and self.fid is not None:
                 # Fall back to FID data, which carries an equivalent time axis
@@ -459,26 +461,28 @@ class Simpy:
             if not data_dict:
                 raise ValueError("No data available to save in xreim format")
 
-            with Path(filename).open('w') as f:
+            with Path(filename).open("w") as f:
                 for t_val, re_val, im_val in zip(
-                    data_dict['time'], data_dict['real'], data_dict['imag'],
+                    data_dict["time"],
+                    data_dict["real"],
+                    data_dict["imag"],
                     strict=True,
                 ):
-                    f.write(f'{t_val} {re_val} {im_val}\n')
+                    f.write(f"{t_val} {re_val} {im_val}\n")
             return self
 
         # CSDF (CSDM) format via the optional csdmpy dependency
-        if format == 'csdf':
+        if format == "csdf":
             self._write_csdf(filename)
             return self
 
         # SIMPSON SPE/FID formats
-        if format == 'spe':
+        if format == "spe":
             data_dict = self.spe
-            data_type = 'SPE'
-        elif format == 'fid':
+            data_type = "SPE"
+        elif format == "fid":
             data_dict = self.fid
-            data_type = 'FID'
+            data_type = "FID"
         else:
             raise ValueError(f"Unsupported save format: {format}")
 
@@ -488,26 +492,28 @@ class Simpy:
         # For spectra, preserve the frequency axis: read_spe() reconstructs
         # hz = sw*(i/np - 0.5) - REF, so derive REF from the actual axis.
         ref = 0.0
-        if format == 'spe' and 'hz' in data_dict:
-            sw = data_dict['sw']
-            ref = -sw / 2 - data_dict['hz'][0]
+        if format == "spe" and "hz" in data_dict:
+            sw = data_dict["sw"]
+            ref = -sw / 2 - data_dict["hz"][0]
 
         # Write SIMPSON format file
-        with Path(filename).open('w') as f:
-            f.write('SIMP\n')
-            if 'np' in data_dict:
-                f.write(f'NP={int(data_dict["np"])}\n')
-            if 'sw' in data_dict:
-                f.write(f'SW={data_dict["sw"]}\n')
+        with Path(filename).open("w") as f:
+            f.write("SIMP\n")
+            if "np" in data_dict:
+                f.write(f"NP={int(data_dict['np'])}\n")
+            if "sw" in data_dict:
+                f.write(f"SW={data_dict['sw']}\n")
             if abs(ref) > 1e-9:
-                f.write(f'REF={ref}\n')
-            f.write(f'TYPE={data_type}\n')
-            f.write('DATA\n')
+                f.write(f"REF={ref}\n")
+            f.write(f"TYPE={data_type}\n")
+            f.write("DATA\n")
 
-            for re_val, im_val in zip(data_dict['real'], data_dict['imag'], strict=True):
-                f.write(f'{re_val} {im_val}\n')
+            for re_val, im_val in zip(
+                data_dict["real"], data_dict["imag"], strict=True
+            ):
+                f.write(f"{re_val} {im_val}\n")
 
-            f.write('END')
+            f.write("END")
 
         return self
 
@@ -522,7 +528,7 @@ class Simpy:
         if not spe:
             raise ValueError("No frequency-domain data to save in csdf format")
 
-        hz = np.asarray(spe['hz'], dtype=float)
+        hz = np.asarray(spe["hz"], dtype=float)
         if len(hz) < 2:
             raise ValueError("Need at least two points to save in csdf format")
 
@@ -531,7 +537,7 @@ class Simpy:
             increment=f"{hz[1] - hz[0]} Hz",
             coordinates_offset=f"{hz[0]} Hz",
         )
-        signal = np.asarray(spe['real']) + 1j * np.asarray(spe['imag'])
+        signal = np.asarray(spe["real"]) + 1j * np.asarray(spe["imag"])
         dependent_variable = csdm.as_dependent_variable(signal.astype(np.complex128))
 
         csdm.CSDM(

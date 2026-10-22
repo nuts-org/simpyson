@@ -6,6 +6,8 @@ simulation parameters, pulse sequence selection, and output configuration.
 The generated .in file can be run with SIMPSON or inspected manually.
 """
 
+from __future__ import annotations
+
 from simpyson import SimpCalc
 
 # Define a spin system (two 1H sites with a shift difference)

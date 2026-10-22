@@ -7,12 +7,12 @@ SimPYson is currently maintained by Carlos, Márcio and Daniel as part of NUTS.
 The currently active maintainers are as follows:
 
 - [Carlos Bornes](https://github.com/carlosbornes)
-- [Márcio Soares](https://github.com/msoares98):
-- [Daniel Pereira](https://github.com/danielcunhapereira):
+- [Márcio Soares](https://github.com/msoares98)
+- [Daniel Pereira](https://github.com/danielcunhapereira)
 
 ## Contributors
 
-Additional contributions were made by the individuals listed [here](https://github.com/carlosbornes/simpyson/graphs/contributors).
+Additional contributions were made by the individuals listed [here](https://github.com/nuts-org/simpyson/graphs/contributors).
 
 
 ## Inspiration

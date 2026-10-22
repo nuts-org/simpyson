@@ -12,7 +12,7 @@ from soprano.selection import AtomSelection
 
 def _default_isotope_file() -> str:
     """Return the path to the bundled isotope data JSON file."""
-    return str(Path(__file__).parent / 'isotope_data.json')
+    return str(Path(__file__).parent / "isotope_data.json")
 
 
 def _load_isotope_data(nucleus: str, isotope_file: str | None = None) -> dict:
@@ -39,10 +39,12 @@ def _load_isotope_data(nucleus: str, isotope_file: str | None = None) -> dict:
     if isotope_file is None:
         isotope_file = _default_isotope_file()
 
-    digits = ''.join(filter(str.isdigit, nucleus))
-    letters = ''.join(filter(str.isalpha, nucleus))
+    digits = "".join(filter(str.isdigit, nucleus))
+    letters = "".join(filter(str.isalpha, nucleus))
     if not digits or not letters:
-        raise ValueError(f"Invalid nucleus {nucleus!r}. Expected a mass number + element, e.g. '13C'.")
+        raise ValueError(
+            f"Invalid nucleus {nucleus!r}. Expected a mass number + element, e.g. '13C'."
+        )
 
     mass_number = int(digits)
     element = letters.capitalize()
@@ -53,7 +55,7 @@ def _load_isotope_data(nucleus: str, isotope_file: str | None = None) -> dict:
     if element in data and str(mass_number) in data[element]:
         return data[element][str(mass_number)]
 
-    raise ValueError(f'Nucleus {nucleus} not found in isotope data.')
+    raise ValueError(f"Nucleus {nucleus} not found in isotope data.")
 
 
 def get_gamma(nucleus: str, isotope_file: str | None = None) -> float:
@@ -78,7 +80,7 @@ def get_gamma(nucleus: str, isotope_file: str | None = None) -> float:
     ValueError
         If the nucleus is not found in the isotope data.
     """
-    return _load_isotope_data(nucleus, isotope_file)['Gamma']
+    return _load_isotope_data(nucleus, isotope_file)["Gamma"]
 
 
 def get_spin(nucleus: str, isotope_file: str | None = None) -> float:
@@ -102,9 +104,9 @@ def get_spin(nucleus: str, isotope_file: str | None = None) -> float:
     ValueError
         If the nucleus is not found in the isotope data.
     """
-    spin_str = _load_isotope_data(nucleus, isotope_file)['Spin']
-    if '/' in str(spin_str):
-        num, den = spin_str.split('/')
+    spin_str = _load_isotope_data(nucleus, isotope_file)["Spin"]
+    if "/" in str(spin_str):
+        num, den = spin_str.split("/")
         return float(num) / float(den)
     return float(spin_str)
 
@@ -133,21 +135,22 @@ def get_larmor_freq(b0: str, nucleus: str, isotope_file: str | None = None) -> f
         If B0 unit is not 'T' or 'MHz', or if the nucleus is not found.
     """
     gamma = get_gamma(nucleus, isotope_file=isotope_file)
-    b0_unit = ''.join(filter(str.isalpha, b0)).lower()
-    b0_value = float(''.join(filter(lambda x: x.isdigit() or x == '.', b0)))
+    b0_unit = "".join(filter(str.isalpha, b0)).lower()
+    b0_value = float("".join(filter(lambda x: x.isdigit() or x == ".", b0)))
 
     # gamma is stored as gamma / 1e7 in the isotope data file,
     # so gamma * 1e7 gives the true value in rad/(s*T).
-    if b0_unit == 't':
+    if b0_unit == "t":
         larmor_freq = gamma * 1e7 * b0_value / (2 * np.pi * 1e6)
-    elif b0_unit == 'mhz':
-        gamma_h = get_gamma('1H', isotope_file=isotope_file)
+    elif b0_unit == "mhz":
+        gamma_h = get_gamma("1H", isotope_file=isotope_file)
         b0_tesla = 2 * np.pi * b0_value * 1e6 / (gamma_h * 1e7)
         larmor_freq = gamma * 1e7 * b0_tesla / (2 * np.pi * 1e6)
     else:
-        raise ValueError('B0 unit must be T or MHz.')
+        raise ValueError("B0 unit must be T or MHz.")
 
     return larmor_freq
+
 
 def add_spectra(spectra_list: list, b0: str | None = None, nucleus: str | None = None):
     """
@@ -194,24 +197,24 @@ def add_spectra(spectra_list: list, b0: str | None = None, nucleus: str | None =
         return result
 
     # Check whether all spectra share the same Hz axis
-    ref_hz = spe_data_list[0]['hz']
+    ref_hz = spe_data_list[0]["hz"]
     axes_match = all(
-        len(spe['hz']) == len(ref_hz) and np.allclose(spe['hz'], ref_hz)
+        len(spe["hz"]) == len(ref_hz) and np.allclose(spe["hz"], ref_hz)
         for spe in spe_data_list[1:]
     )
 
     if axes_match:
         # Fast path: identical Hz axes, just sum element-wise
         for spe in spe_data_list[1:]:
-            result.spe['real'] += spe['real']
-            result.spe['imag'] += spe['imag']
+            result.spe["real"] += spe["real"]
+            result.spe["imag"] += spe["imag"]
     else:
         # Interpolate all spectra onto a common Hz grid
-        hz_min = min(spe['hz'][0] for spe in spe_data_list)
-        hz_max = max(spe['hz'][-1] for spe in spe_data_list)
+        hz_min = min(spe["hz"][0] for spe in spe_data_list)
+        hz_max = max(spe["hz"][-1] for spe in spe_data_list)
 
         # Use the smallest Hz step among all spectra
-        steps = [spe['sw'] / spe['np'] for spe in spe_data_list]
+        steps = [spe["sw"] / spe["np"] for spe in spe_data_list]
         finest_step = min(steps)
 
         n_common = int(np.ceil((hz_max - hz_min) / finest_step)) + 1
@@ -222,10 +225,12 @@ def add_spectra(spectra_list: list, b0: str | None = None, nucleus: str | None =
         sum_imag = np.zeros(n_common)
 
         for spe in spe_data_list:
-            sum_real += np.interp(common_hz, spe['hz'], spe['real'],
-                                  left=0.0, right=0.0)
-            sum_imag += np.interp(common_hz, spe['hz'], spe['imag'],
-                                  left=0.0, right=0.0)
+            sum_real += np.interp(
+                common_hz, spe["hz"], spe["real"], left=0.0, right=0.0
+            )
+            sum_imag += np.interp(
+                common_hz, spe["hz"], spe["imag"], left=0.0, right=0.0
+            )
 
         # Full spectral width is N * step, not the coordinate span (N-1) * step
         common_sw = (common_hz[1] - common_hz[0]) * n_common
@@ -235,6 +240,7 @@ def add_spectra(spectra_list: list, b0: str | None = None, nucleus: str | None =
         result._compute_ppm()
 
     return result
+
 
 def simple_spinsys(
     atoms: object,
@@ -343,7 +349,7 @@ def simple_spinsys(
                 if q_order is not None:
                     if q_order[i] > 2:
                         raise ValueError(
-                            f"Quadrupolar order must be 2 or less, got {q_order[i]} for atom {i+1}"
+                            f"Quadrupolar order must be 2 or less, got {q_order[i]} for atom {i + 1}"
                         )
                     efg_block += "quadrupole {} {} {} {} {} {} {}\n".format(
                         i + 1, q_order[i], cq[i], eta_q_vals[i], *euler_q_vals[i]

@@ -105,7 +105,10 @@ def read_vasp(file: str, format: str) -> ase.Atoms:
 
     # --- G=0 constant shielding (3x3 tensor) ---
     # VASP 6.4.1+ has an extra description line
-    if lines[idx_g0 + 1].strip() == "using pGv susceptibility, excluding core contribution":
+    if (
+        lines[idx_g0 + 1].strip()
+        == "using pGv susceptibility, excluding core contribution"
+    ):
         start_idx = idx_g0 + 5
     else:
         start_idx = idx_g0 + 4
@@ -124,7 +127,11 @@ def read_vasp(file: str, format: str) -> ase.Atoms:
 
     # --- Assemble results ---
     efg = np.array(efg, dtype=float)
-    efg = efg * 1e20 / const.physical_constants["atomic unit of electric field gradient"][0]
+    efg = (
+        efg
+        * 1e20
+        / const.physical_constants["atomic unit of electric field gradient"][0]
+    )
     sym_tensor = np.split(np.array(sym_tensor, dtype=float), n_atoms)
     const_shield = np.array(const_shield, dtype=float)
 
@@ -140,8 +147,8 @@ def read_vasp(file: str, format: str) -> ase.Atoms:
         ms.append(-ms_tensor)
     ms = np.array(np.array(ms).tolist(), dtype=float)
 
-    atoms.set_array('efg', efg)
-    atoms.set_array('ms', ms)
+    atoms.set_array("efg", efg)
+    atoms.set_array("ms", ms)
 
     return atoms
 

@@ -5,6 +5,8 @@ This script shows how to load a .spe file, access its data, and optionally
 convert the frequency axis to ppm.
 """
 
+from __future__ import annotations
+
 from simpyson import read_simp
 
 # --- Read a spectrum file ---

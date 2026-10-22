@@ -6,11 +6,12 @@ nav:
   - Home: index.md
   - Installation:
       - installation/install.md
-  - User Guide:
-      - Reading SIMPSON files: user_guide/01_reading_files.ipynb
-      - A Simpson python calculator: user_guide/02_simulation_calculator.ipynb
-      - From DFT to SIMPSON: user_guide/03_dft_to_simpson.ipynb
-  - Code Documentation: reference/
+  - Quickstart: quickstart.md
+  - Guides:
+      - Analyse SIMPSON output: user_guide/01_reading_files.ipynb
+      - From DFT to NMR spectrum: user_guide/02_dft_to_simpson.ipynb
+      - Custom simulations with SimpCalc: user_guide/03_simulation_calculator.ipynb
+  - API reference: reference/
   - About:
       - about/contributors.md
       - about/changelog.md
@@ -43,6 +44,10 @@ theme:
     primary: blue
     scheme: dark
 
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
+
 markdown_extensions:
   - abbr
   - admonition
@@ -58,6 +63,9 @@ markdown_extensions:
       smart_enable: all
   - pymdownx.caret
   - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
   - pymdownx.highlight:
       anchor_linenums: true
       line_spans: __span
@@ -78,6 +86,9 @@ markdown_extensions:
   - pymdownx.tasklist:
       custom_checkbox: true
   - pymdownx.tilde
+
+hooks:
+  - mkdocs_hooks.py
 
 plugins:
   - search:

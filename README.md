@@ -22,8 +22,8 @@ SimPYson is a Python package that makes it easier to work with [SIMPSON](https:/
 from simpyson import read_simp
 
 data = read_simp("ethanol.spe", b0="400MHz", nucleus="1H")
-print(data.ppm['ppm'])   # ppm axis, auto-calculated
-print(data.spe['hz'])    # Hz axis
+print(data.ppm["ppm"])  # ppm axis, auto-calculated
+print(data.spe["hz"])  # Hz axis
 ```
 
 Accessing `.fid` on a spectrum file (or `.spe` on a FID) triggers automatic conversion via FFT — no manual processing needed.
@@ -41,7 +41,7 @@ shift 2 50p 0 0 0 0 0
 """
 
 result = simulate_spectrum(spinsys, proton_frequency=400e6, spin_rate=10000)
-print(result.ppm['ppm'])
+print(result.ppm["ppm"])
 ```
 
 `simulate_spectrum()` automatically estimates the spectral width and carrier offset from the chemical shifts. For full control over all parameters, use `SimpCalc` directly — see the [documentation](https://nuts-org.github.io/simpyson/).

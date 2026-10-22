@@ -41,6 +41,7 @@ docs = [
     "mkdocstrings[python]>=0.22.0",
     "mkdocs-gen-files>=0.5.0",
     "mkdocs-literate-nav>=0.6.0",
+    "mknotebooks",
     "pillow>=10.0.0",
     "cairosvg>=2.7.1",
 ]
@@ -137,6 +138,7 @@ lint.flake8-unused-arguments.ignore-variadic-names = true
 lint.pydocstyle.convention = "numpy"
 lint.isort.required-imports = ["from __future__ import annotations"]
 lint.isort.known-first-party = ["simpyson"]
+lint.per-file-ignores = {"docs/**" = ["T201"], "examples/**" = ["T201"]}
 src = ["src"]
 exclude = []
 extend-exclude = ["tests"]

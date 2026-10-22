@@ -1,20 +1,54 @@
-`SimPYson` is a Python package developed to streamline the use of [SIMPSON](https://inano.au.dk/about/research-centers-and-projects/nmr/software/simpson), a simulation software for solid-state NMR. Born out of the frustration of trying to learn and use SIMPSON on our own, SimPYson aims to simplify the process of converting DFT calculation results into SIMPSON input files, running simulations, and reading SIMPSON output all within Python.
+# SimPYson
 
-## Current features
+SimPYson is a Python interface to [SIMPSON](https://inano.au.dk/about/research-centers-and-projects/nmr/software/simpson), a software for numerical simulations of solid-state NMR experiments. SimPYson reads SIMPSON output, turns DFT calculations into simulated spectra, and writes and runs SIMPSON inputs within Python.
 
-- **Convert DFT data to SIMPSON input**: Prepare SIMPSON input files from DFT calculations (CASTEP, Quantum Espresso, VASP) using [ASE](https://ase-lib.org/) and [Soprano](https://ccp-nc.github.io/soprano/intro.html).
-- **Run simulations from Python**: Use `SimpCalc` or `simulate_spectrum()` to generate, execute, and read SIMPSON simulations without writing Tcl manually.
-- **Read and process output files**: Load `.spe`, `.fid`, `.xreim`, and `.csdf` files from SIMPSON into the unified `Simpy` data container.
-- **Pulse sequence templates**: Ready-made templates for no-pulse, 90-degree pulse, and CPMAS experiments, plus support for custom pulse sequences.
-- **Graphical User Interface**: Launch with `simpyson gui` to view, combine, and convert spectra interactively (PyQt5 + Plotly).
+Pick the path that matches what you have in front of you:
 
-## Why choose SimPYson?
+<div class="grid cards" markdown>
 
-One possible advantage lies in its seamless integration with other Python packages, making it easy to incorporate into your existing Python workflow. However, depending on your needs/taste, there are a few alternatives that may better suit you, here are some examples:
+-   **I have SIMPSON output files**
 
-- [Simplot](https://inano.au.dk/about/research-centers-and-projects/nmr/software/simpson): From the developers of SIMPSON, offers a user-friendly interface to analyze the results.
-- [Simview](https://github.com/zdetos/Simpson-View): From [Zdenek Tosner](https://optimal-nmr.net/about.html) (SIMPSON dev), provides a GUI to run SIMPSON simulations and plot results within a clean, intuitive interface.
-- [EasyNMR](https://easynmr.pastis.dk/): A cloud-based platform that allows you to run and analyze SIMPSON simulations remotely.
+    ---
 
-## Future
-We are open to suggestions.
+    You have `.spe`, `.fid`, `.xreim` or `.csdf` files and want to plot or process them in Python. SIMPSON is not needed.
+
+    [:octicons-arrow-right-24: Analyse SIMPSON output](user_guide/01_reading_files.ipynb)
+
+-   **I have a DFT calculation**
+
+    ---
+
+    You have a CASTEP `.magres` file or a VASP `OUTCAR` and want an simple NMR spectrum. `simulate_spectrum()` needs no further setup.
+
+    [:octicons-arrow-right-24: From DFT to NMR spectrum](user_guide/02_dft_to_simpson.ipynb)
+
+-   **I want to design a simulation**
+
+    ---
+
+    You want full control over the spin system, the pulse sequence and the acquisition: built-in templates or your own Tcl.
+
+    [:octicons-arrow-right-24: Custom simulations with SimpCalc](user_guide/03_simulation_calculator.ipynb)
+
+</div>
+
+If you are new here, see the [Quickstart](quickstart.md) which shows each path in about ten lines. Installation instructions, including when you need the SIMPSON installation, are on the [Installation](installation/install.md) page.
+
+## What you we provide
+
+- **Read SIMPSON output**: `.spe`, `.fid`, `.xreim` and `.csdf` files load into one [`Simpy`][simpyson.simpy.Simpy] object that converts between FID, spectrum (Hz) and spectrum (ppm).
+- **DFT to spectrum**: spin systems from CASTEP, Quantum ESPRESSO and VASP calculations, built with [ASE](https://ase-lib.org/) and [Soprano](https://ccp-nc.github.io/soprano/intro.html).
+- **Simulations from Python**: [`simulate_spectrum()`][simpyson.calculator.simulate_spectrum] for one-call spectra, [`SimpCalc`][simpyson.calculator.SimpCalc] for full control, with ready-made `no_pulse`, `pulse_90` and `cp_mas` templates and support for your own pulse sequences.
+- **A GUI** for quick inspection: `simpyson gui`.
+
+## Why SimPYson?
+
+SimPYson is built by [NUTS - **N**mr **U**nofficial **T**ool**S**et)](https://github.com/nuts-org/) for people who prefer to work within python. Everything is a script, so it is reproducible, easy to batch over many structures, and sits naturally in a DFT-to-NMR pipeline next to other Python tools.
+
+If you would rather work through a graphical interface, these are good alternatives:
+
+- [Simplot](https://inano.au.dk/about/research-centers-and-projects/nmr/software/simpson): from the developers of SIMPSON, for analysing the results.
+- [Simview](https://github.com/zdetos/Simpson-View): from [Zdenek Tosner](https://optimal-nmr.net/about.html) (SIMPSON developer), a GUI to run SIMPSON simulations and plot results.
+- [EasyNMR](https://easynmr.pastis.dk/): a cloud-based platform to run and analyse SIMPSON simulations remotely.
+
+We are open to suggestions: please open an issue on [GitHub](https://github.com/nuts-org/simpyson/issues).

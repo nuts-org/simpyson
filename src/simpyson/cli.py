@@ -18,7 +18,7 @@ def main() -> None:
     subparsers = parser.add_subparsers(dest="command")
 
     parser_gui = subparsers.add_parser("gui", help="Launch the GUI")
-    parser_gui.add_argument('files', nargs='*', help='Optional file(s) to open.')
+    parser_gui.add_argument("files", nargs="*", help="Optional file(s) to open.")
     parser_gui.set_defaults(func=lambda args: gui_main(args.files))
 
     args = parser.parse_args()

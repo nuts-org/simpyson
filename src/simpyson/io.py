@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import os
 from collections.abc import Callable
 from pathlib import Path
 
@@ -35,15 +36,15 @@ def read_spe(filename: str, simpy_data: Simpy) -> None:
         np_value: float | None = None
         sw: float | None = None
         for line in f:
-            if line.startswith('NP'):
-                np_value = float(line.split('=')[1])
-            elif line.startswith('SW'):
-                sw = float(line.split('=')[1])
-            elif line.startswith('REF'):
-                ref = float(line.split('=')[1])
-            elif line.startswith('DATA'):
+            if line.startswith("NP"):
+                np_value = float(line.split("=")[1])
+            elif line.startswith("SW"):
+                sw = float(line.split("=")[1])
+            elif line.startswith("REF"):
+                ref = float(line.split("=")[1])
+            elif line.startswith("DATA"):
                 data_sec = True
-            elif data_sec and line.startswith('END'):
+            elif data_sec and line.startswith("END"):
                 break
             elif data_sec:
                 a, b = map(float, line.split())
@@ -89,13 +90,13 @@ def read_fid(filename: str, simpy_data: Simpy) -> None:
         np_value: float | None = None
         sw: float | None = None
         for line in f:
-            if line.startswith('NP'):
-                np_value = float(line.split('=')[1])
-            elif line.startswith('SW'):
-                sw = float(line.split('=')[1])
-            elif line.startswith('DATA'):
+            if line.startswith("NP"):
+                np_value = float(line.split("=")[1])
+            elif line.startswith("SW"):
+                sw = float(line.split("=")[1])
+            elif line.startswith("DATA"):
                 data_sec = True
-            elif data_sec and line.startswith('END'):
+            elif data_sec and line.startswith("END"):
                 break
             elif data_sec:
                 a, b = map(float, line.split())
@@ -155,8 +156,16 @@ def read_csdf(filename: str, simpy_data: Simpy) -> None:
     """
     import csdmpy as csdm  # noqa: PLC0415
 
-    data = csdm.load(filename)
-    hz = data.dimensions[0].coordinates.to('Hz').value
+    # csdmpy parses the drive letter in Windows paths (C:\...) as a URL scheme
+    # and file:// URIs are passed unchanged to open(), so use a relative path
+    source = str(filename)
+    if os.name == "nt" and Path(source).drive:
+        try:
+            source = os.path.relpath(os.path.realpath(source))
+        except ValueError:  # different drive than the working directory
+            pass
+    data = csdm.load(source)
+    hz = data.dimensions[0].coordinates.to("Hz").value
     real = data.dependent_variables[0].components[0].real
     imag = data.dependent_variables[0].components[0].imag
     np_value = len(hz)
@@ -170,17 +179,17 @@ def read_csdf(filename: str, simpy_data: Simpy) -> None:
 
 # Defined once, after the reader functions below
 _EXT_TO_FMT: dict[str, str] = {
-    '.spe':   'spe',
-    '.fid':   'fid',
-    '.xreim': 'xreim',
-    '.csdf':  'csdf',
+    ".spe": "spe",
+    ".fid": "fid",
+    ".xreim": "xreim",
+    ".csdf": "csdf",
 }
 
 _READERS: dict[str, Callable[[str, Simpy], None]] = {
-    'spe':   read_spe,
-    'fid':   read_fid,
-    'xreim': read_xreim,
-    'csdf':  read_csdf,
+    "spe": read_spe,
+    "fid": read_fid,
+    "xreim": read_xreim,
+    "csdf": read_csdf,
 }
 
 
